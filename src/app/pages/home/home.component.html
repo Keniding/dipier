@@ -1,4 +1,4 @@
-<div class="min-h-screen mat-app-background">
+<div class="min-h-screen mat-app-background" [ngClass]="{'dark-theme': isDarkTheme, 'light-theme': !isDarkTheme}">
   <mat-toolbar color="primary">
     <span class="text-xl font-bold">Sistema de Gestión de Inventario</span>
     <span class="flex-grow"></span>
@@ -12,7 +12,7 @@
   </mat-toolbar>
 
   <div class="container mx-auto mt-8 p-4">
-    <mat-card [ngClass]="{'dark-theme': isDarkTheme, 'light-theme': !isDarkTheme}">
+    <mat-card>
       <mat-card-header>
         <mat-card-title class="text-2xl font-bold mb-4">Lista de Productos</mat-card-title>
       </mat-card-header>

@@ -1,14 +1,24 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@use 'theme-light';
-@use 'theme-dark';
-
-@include mat.core();
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 .light-theme {
-  @include mat.all-component-themes(theme-light.$light-theme);
+  @import '@angular/material/prebuilt-themes/indigo-pink.css';
 }
 
 .dark-theme {
-  @include mat.all-component-themes(theme-dark.$dark-theme);
+  @import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.dark-theme {
+  background-color: #303030;
+  color: #ffffff;
+}
+
+.light-theme {
+  background-color: #fafafa;
+  color: #000000;
 }
