@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+@use 'theme-light';
+@use 'theme-dark';
+
+@include mat.core();
+
+.light-theme {
+  @include mat.all-component-themes(theme-light.$light-theme);
+}
+
+.dark-theme {
+  @include mat.all-component-themes(theme-dark.$dark-theme);
+}
