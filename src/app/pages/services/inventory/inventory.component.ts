@@ -63,7 +63,7 @@ export class InventoryComponent implements OnInit {
   productInventoryList: any[] = [];
   filteredProductInventoryList: any[] = [];
   cantidadBase: number = 0;
-  filterQuantity: number = -1;
+  filterQuantity: number = 0;
 
   constructor(
     private productService: ProductService,

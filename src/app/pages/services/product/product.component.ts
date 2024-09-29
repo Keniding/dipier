@@ -11,10 +11,20 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID} from '@angular/core';
 import {ProductService} from "../../../services/product.service";
+import {StoreProductComponent} from "./store-product/store-product.component";
+import {MatDialog} from "@angular/material/dialog";
 
 
 interface Producto {
   id: string;
+  name: string;
+  description: string;
+  skuCode: string;
+  price: number;
+  categories: { id: string; name: string }[];
+}
+
+interface ProductRequest {
   name: string;
   description: string;
   skuCode: string;
@@ -31,7 +41,7 @@ interface Producto {
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
   ],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
@@ -48,7 +58,8 @@ export class ProductComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     @Inject(DOCUMENT) private document: Document,
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -75,7 +86,6 @@ export class ProductComponent implements OnInit, OnDestroy {
     }
   }
 
-
   ngOnDestroy(): void {
     if (this.themeSubscription) {
       this.themeSubscription.unsubscribe();
@@ -83,7 +93,16 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   agregarProducto() {
-    console.log('Agregar producto');
+    const dialogRef = this.dialog.open(StoreProductComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Producto agregado exitosamente');
+        this.loadProducts();
+      }
+    });
   }
 
   editarProducto(producto: Producto) {

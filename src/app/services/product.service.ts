@@ -12,6 +12,14 @@ interface Producto {
   categories: { id: string; name: string }[];
 }
 
+interface ProductRequest {
+  name: string;
+  description: string;
+  skuCode: string;
+  price: number;
+  categories: { id: string; name: string }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,8 +28,11 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getProducts(): Observable<Producto[]> {
-    let headers = new HttpHeaders();
+  private createHeaders(contentType: string = 'application/json'): HttpHeaders {
+    let headers = new HttpHeaders({
+      'Content-Type': contentType
+    });
+
     if (typeof window !== 'undefined') {
       try {
         const token = localStorage.getItem('authToken');
@@ -35,6 +46,16 @@ export class ProductService {
       }
     }
 
+    return headers;
+  }
+
+  getProducts(): Observable<Producto[]> {
+    const headers = this.createHeaders();
     return this.http.get<Producto[]>(`${this.apiUrl}/product`, { headers });
+  }
+
+  storeProduct(productRequest: ProductRequest): Observable<Producto> {
+    const headers = this.createHeaders();
+    return this.http.post<Producto>(`${this.apiUrl}/product`, productRequest, { headers });
   }
 }
