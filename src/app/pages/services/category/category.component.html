@@ -1,10 +1,31 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-  <mat-card *ngFor="let category of categories" class="bg-white shadow-lg rounded-lg overflow-hidden">
+<div class="min-h-screen mat-app-background">
+  <mat-toolbar color="primary" class="flex flex-wrap items-center">
+    <span class="text-lg md:text-xl font-bold">Sistema de Gestión de Inventario</span>
+    <span class="flex-grow"></span>
+    <button mat-raised-button color="accent" class="mr-4 mb-2 md:mb-0" (click)="agregarCategoria()">
+      <mat-icon class="mr-2">add</mat-icon>
+      <span class="hidden sm:inline">Agregar Categoría</span>
+    </button>
+  </mat-toolbar>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 mb-4 ml-4 mr-4">
+    <mat-card
+      *ngFor="let category of categories"
+      class="mat-card rounded border border-gray-200"
+      (click)="seleccionarCategoria(category)"
+      [ngClass]="{'selected': categorySeleccionada === category}"
+    >
     <mat-card-header>
-      <mat-card-title class="text-xl font-bold">{{ category.name }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>Aquí puedes agregar más detalles sobre la categoría si es necesario.</p>
-    </mat-card-content>
-  </mat-card>
+        <mat-card-title class="text-lg">{{ category.name }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="text-gray-600">Detalles de la categoría.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="editarCategoria(category)">Modificar</button>
+        <button mat-button color="warn" (click)="eliminarCategoria(category)">Eliminar</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
 </div>

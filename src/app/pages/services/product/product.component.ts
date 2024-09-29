@@ -8,7 +8,9 @@ import { MatCardModule } from '@angular/material/card';
 import { Subscription } from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
+import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID} from '@angular/core';
+import {ProductService} from "../../../services/product.service";
 
 
 interface Producto {
@@ -35,45 +37,63 @@ interface Producto {
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit, OnDestroy {
+  product: Producto[] = [];
+
   displayedColumns: string[] = ['id', 'name', 'price', 'acciones'];
   dataSource = new MatTableDataSource<Producto>();
   isDarkTheme = false;
   private themeSubscription: Subscription | undefined;
 
   constructor(
+    private productService: ProductService,
     @Inject(DOCUMENT) private document: Document,
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  ngOnInit(): void {
-    const token = localStorage.getItem('authToken');
+  ngOnInit() {
+    this.loadProducts();
+  }
 
-    if (token) {
-      const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      });
+  loadProducts() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('authToken')
 
-      this.http.get<Producto[]>('http://localhost:8000/api/product', { headers }).subscribe({
-        next: (data) => {
-          this.dataSource.data = data;
-        },
-        error: (error) => {
-          console.error('Error al obtener los productos', error);
-        },
-        complete: () => {
-          console.log('La solicitud de productos ha completado');
+      if (token) {
+        const headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        });
+
+        this.productService.getProducts({ headers }).subscribe({
+          next: (data) => {
+            this.product = data;
+            this.dataSource.data = data;
+            console.log('Datos recibidos:', data);
+          },
+          error: (error) => {
+            console.error('Error al cargar las categorías:', error);
+          },
+          complete: () => {
+            console.log('Carga de categorías completada');
+          }
+        });
+      } else {
+        console.error('No se encontró un token de autenticación');
         }
-      });
     } else {
-      console.error('No se encontró un token de autenticación');
+      console.error('localStorage no está disponible en este entorno');
     }
   }
+
 
   ngOnDestroy(): void {
     if (this.themeSubscription) {
       this.themeSubscription.unsubscribe();
     }
+  }
+
+  agregarProducto() {
+    console.log('Agregar producto');
   }
 
   editarProducto(producto: Producto) {

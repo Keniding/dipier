@@ -3,20 +3,24 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export interface Category {
+interface Producto {
   id: string;
   name: string;
+  description: string;
+  skuCode: string;
+  price: number;
+  categories: { id: string; name: string }[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
+export class ProductService {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  getCategories(p: { headers: HttpHeaders }): Observable<Category[]> {
+  getProducts(p: { headers: HttpHeaders }): Observable<Producto[]> {
     let headers = new HttpHeaders();
     if (typeof window !== 'undefined') {
       try {
@@ -31,6 +35,6 @@ export class CategoryService {
       }
     }
 
-    return this.http.get<Category[]>(`${this.apiUrl}/category`, { headers });
+    return this.http.get<Producto[]>(`${this.apiUrl}/product`, { headers });
   }
 }
