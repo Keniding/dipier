@@ -1,7 +1,31 @@
-.inventory-card {
-  background-color: #cdccdf;
-  color: #3a59bc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.low-stock {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
+
+.high-stock {
+  border: 2px solid green;
+  background-color: #e6ffe6;
+}
+
+.stock {
+  border: 2px solid #aaff00;
+  background-color: #e6ffe6;
+}
+
+
+.low-stock-bt {
+  border: 2px solid red;
+  background-color: #dd7a7a;
+}
+
+.high-stock-bt {
+  border: 2px solid green;
+  background-color: #79ca79;
+}
+
+.stock-bt {
+  border: 2px solid #aaff00;
+  background-color: #d0e888;
 }
 

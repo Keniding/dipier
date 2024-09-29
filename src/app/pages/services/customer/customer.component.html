@@ -1,0 +1,61 @@
+<div class="min-h-screen mat-app-background">
+  <mat-toolbar color="primary" class="flex flex-wrap items-center">
+    <span class="text-lg md:text-xl font-bold">Sistema de Gestión de Inventario</span>
+    <span class="flex-grow"></span>
+    <button mat-raised-button color="accent" class="mr-4 mb-2 md:mb-0" (click)="agregarCustomer()">
+      <mat-icon class="mr-2">add</mat-icon>
+      <span class="hidden sm:inline">Agregar Customer</span>
+    </button>
+  </mat-toolbar>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <mat-card *ngFor="let customer of customers" class="shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white rounded-lg">
+      <!-- Card Header -->
+      <mat-card-header class="bg-blue-400 text-white rounded-t-lg p-4">
+        <div mat-card-avatar class="bg-white rounded-full p-2">
+          <mat-icon class="text-blue-600">person</mat-icon>
+        </div>
+        <div class="ml-4">
+          <mat-card-title class="text-xl font-bold tracking-wide">{{ customer.firstName }} {{ customer.lastName }}</mat-card-title>
+          <mat-card-subtitle>{{ customer.email }}</mat-card-subtitle>
+        </div>
+      </mat-card-header>
+
+      <!-- Card Content -->
+      <mat-card-content class="text-gray-700 space-y-3 p-4 m-3">
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">phone</mat-icon>
+          <span><strong>Tel:</strong> {{ customer.phoneNumber }}</span>
+        </p>
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">cake</mat-icon>
+          <span><strong>Nac:</strong> {{ customer.dateOfBirth | date:'shortDate' }}</span>
+        </p>
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">home</mat-icon>
+          <span><strong>Dir:</strong> {{ customer.address }}</span>
+        </p>
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">healing</mat-icon>
+          <span><strong>Alergias:</strong> {{ customer.allergies.join(', ') }}</span>
+        </p>
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">local_hospital</mat-icon>
+          <span><strong>Cond. Crónicas:</strong> {{ customer.chronicConditions.join(', ') }}</span>
+        </p>
+        <p class="flex items-center">
+          <mat-icon class="text-blue-500 mr-2">event</mat-icon>
+          <span><strong>Últ. Visita:</strong> {{ customer.lastVisit | date:'shortDate' }}</span>
+        </p>
+      </mat-card-content>
+
+      <!-- Card Actions -->
+      <mat-card-actions class="flex justify-end p-4">
+        <button mat-button class="bg-blue-500 text-white hover:bg-blue-600 transition-colors rounded-full px-4 py-2">
+          Más Información
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+</div>
