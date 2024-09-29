@@ -1,22 +1,25 @@
-import {Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
-import {CommonModule, DOCUMENT, isPlatformBrowser} from "@angular/common";
-import {MatTableModule} from "@angular/material/table";
-import {MatToolbar, MatToolbarModule} from "@angular/material/toolbar";
-import {MatIcon, MatIconModule} from "@angular/material/icon";
-import {MatButton, MatButtonModule} from "@angular/material/button";
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from "@angular/common";
+import { MatToolbar } from "@angular/material/toolbar";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton } from "@angular/material/button";
 import {
   MatCard,
   MatCardActions,
   MatCardContent,
   MatCardHeader,
-  MatCardModule,
   MatCardTitle
 } from "@angular/material/card";
-import {ProductService} from "../../../services/product.service";
-import {HttpClient} from "@angular/common/http";
-import {InventoryService} from "../../../services/inventory.service";
-import {MatDialog} from "@angular/material/dialog";
-import {ProductDetailDialogComponent} from "./product-detail-dialog/product-detail-dialog.component";
+import { ProductService } from "../../../services/product.service";
+import { HttpClient } from "@angular/common/http";
+import { InventoryService } from "../../../services/inventory.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ProductDetailDialogComponent } from "./product-detail-dialog/product-detail-dialog.component";
+
+import { Router } from '@angular/router';
+import { MatFormField } from "@angular/material/form-field";
+import { FormsModule } from "@angular/forms";
+import {MatInput, MatInputModule} from "@angular/material/input";
 
 interface Producto {
   id: string;
@@ -45,15 +48,22 @@ interface Inventario {
     MatButton,
     MatIcon,
     MatToolbar,
+    MatFormField,
+    FormsModule,
+    MatInputModule,
+    MatInput,
   ],
   templateUrl: './inventory.component.html',
-  styleUrl: './inventory.component.css'
+  styleUrls: ['./inventory.component.css']
 })
 
 export class InventoryComponent implements OnInit {
   products: Producto[] = [];
   inventory: Inventario[] = [];
   productInventoryList: any[] = [];
+  filteredProductInventoryList: any[] = [];
+  cantidadBase: number = 0;
+  filterQuantity: number = -1;
 
   constructor(
     private productService: ProductService,
@@ -61,7 +71,8 @@ export class InventoryComponent implements OnInit {
     @Inject(DOCUMENT) private document: Document,
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +114,11 @@ export class InventoryComponent implements OnInit {
           quantity: inventoryItem ? inventoryItem.quantity : 0
         };
       });
+
+      this.productInventoryList.sort((a, b) => b.quantity - a.quantity);
+
+      this.filteredProductInventoryList = this.productInventoryList;
+
       console.log('Product Inventory List: ', this.productInventoryList);
     }
   }
@@ -112,4 +128,22 @@ export class InventoryComponent implements OnInit {
       data: item,
     });
   }
+
+  addInventory() {
+    this.router.navigate(['/product']).then(success => {
+      if (success) {
+        console.log('Navegación exitosa a /product');
+      } else {
+        console.log('La navegación a /product falló');
+      }
+    }).catch(error => {
+      console.error('Error durante la navegación:', error);
+    });
+  }
+
+  filterByQuantity() {
+    this.filteredProductInventoryList = this.productInventoryList.filter(item => item.quantity > this.filterQuantity - 1);
+  }
+
+  filterCantidadBase() {  }
 }
