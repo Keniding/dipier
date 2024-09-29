@@ -31,7 +31,7 @@
   </div>
 
   <!-- Mobile Menu -->
-  <nav #mobileMenu class="mobile-menu md:hidden space-y-4 p-4 bg-primary">
+  <nav [ngClass]="{'mobile-menu': true, 'active': isMenuActive}" class="md:hidden space-y-4 p-4 bg-primary">
     <a href="#servicios" class="block text-fuchsia-50 hover:text-gray-950">Servicios</a>
     <a href="#beneficios" class="block text-fuchsia-50 hover:text-gray-950">Beneficios</a>
     <a href="#productos" class="block text-fuchsia-50 hover:text-gray-950">Productos</a>
