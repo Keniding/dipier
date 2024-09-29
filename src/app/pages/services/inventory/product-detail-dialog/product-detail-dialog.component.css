@@ -1,0 +1,56 @@
+.detail-card {
+  background-color: #f0f8ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+mat-card-header {
+  background-color: #4682b4;
+  color: white;
+  padding: 12px;
+  border-radius: 10px 10px 0 0;
+}
+
+.card-title {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+mat-card-content p {
+  font-size: 1.2em;
+  color: #333;
+  margin: 8px 0;
+}
+
+mat-card-content p:nth-child(odd) {
+  background-color: #c6c1ec;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+mat-card-content p:nth-child(even) {
+  background-color: #ffffff;
+  padding-top: 8px;
+  border-radius: 5px;
+}
+
+.sku-code {
+  font-weight: bold;
+  color: #007acc;
+}
+
+.quantity {
+  font-weight: bold;
+  color: #228b22;
+}
+
+.price {
+  font-weight: bold;
+  color: #b22222;
+}
+
+.description {
+  font-weight: bold;
+  color: #8840b1;
+}

@@ -34,28 +34,18 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   loadCategories() {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('authToken');
-
-      if (token) {
-        const headers = new HttpHeaders({
-          'Authorization': `Bearer ${token}`
-        });
-
-        this.categoryService.getCategories({ headers }).subscribe({
-          next: (data) => {
-            this.categories = data;
-            console.log('Datos recibidos:', data);
-          },
-          error: (error) => {
-            console.error('Error al cargar las categorías:', error);
-          },
-          complete: () => {
-            console.log('Carga de categorías completada');
-          }
-        });
-      } else {
-        console.error('No se encontró un token de autenticación');
-      }
+      this.categoryService.getCategories().subscribe({
+        next: (data) => {
+          this.categories = data;
+          console.log('Datos recibidos:', data);
+        },
+        error: (error) => {
+          console.error('Error al cargar las categorías:', error);
+        },
+        complete: () => {
+          console.log('Carga de categorías completada');
+        }
+      });
     } else {
       console.error('La carga de categorías no está disponible en este entorno');
     }

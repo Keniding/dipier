@@ -16,7 +16,7 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(p: { headers: HttpHeaders }): Observable<Category[]> {
+  getCategories(): Observable<Category[]> {
     let headers = new HttpHeaders();
     if (typeof window !== 'undefined') {
       try {

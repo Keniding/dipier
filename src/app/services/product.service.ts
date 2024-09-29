@@ -20,7 +20,7 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getProducts(p: { headers: HttpHeaders }): Observable<Producto[]> {
+  getProducts(): Observable<Producto[]> {
     let headers = new HttpHeaders();
     if (typeof window !== 'undefined') {
       try {

@@ -57,29 +57,19 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   loadProducts() {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('authToken')
-
-      if (token) {
-        const headers = new HttpHeaders({
-          'Authorization': `Bearer ${token}`
-        });
-
-        this.productService.getProducts({ headers }).subscribe({
-          next: (data) => {
-            this.product = data;
-            this.dataSource.data = data;
-            console.log('Datos recibidos:', data);
-          },
-          error: (error) => {
-            console.error('Error al cargar las categorías:', error);
-          },
-          complete: () => {
-            console.log('Carga de categorías completada');
-          }
-        });
-      } else {
-        console.error('No se encontró un token de autenticación');
+      this.productService.getProducts().subscribe({
+        next: (data) => {
+          this.product = data;
+          this.dataSource.data = data;
+          console.log('Datos recibidos:', data);
+        },
+        error: (error) => {
+          console.error('Error al cargar las categorías:', error);
+        },
+        complete: () => {
+          console.log('Carga de categorías completada');
         }
+      });
     } else {
       console.error('localStorage no está disponible en este entorno');
     }
