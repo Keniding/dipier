@@ -1,59 +1,109 @@
-<div class="min-h-screen mat-app-background" [ngClass]="{'dark-theme': isDarkTheme, 'light-theme': !isDarkTheme}">
-  <mat-toolbar color="primary">
-    <span class="text-xl font-bold">Sistema de Gestión de Inventario</span>
-    <span class="flex-grow"></span>
-    <button mat-raised-button color="accent" class="mr-4">
-      <mat-icon class="mr-2">add</mat-icon>
-      Agregar Producto
-    </button>
-    <button mat-icon-button (click)="toggleTheme()">
-      <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
-    </button>
-  </mat-toolbar>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>DIPIER +</title>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-50">
 
-  <div class="container mx-auto mt-8 p-4">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title class="text-2xl font-bold mb-4">Lista de Productos</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <table mat-table [dataSource]="dataSource" class="w-full">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef> Nombre </th>
-            <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef> Cantidad </th>
-            <td mat-cell *matCellDef="let element"> {{element.cantidad}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="precio">
-            <th mat-header-cell *matHeaderCellDef> Precio </th>
-            <td mat-cell *matCellDef="let element"> {{element.precio | currency}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef> Acciones </th>
-            <td mat-cell *matCellDef="let element">
-              <button mat-icon-button color="primary" (click)="editarProducto(element)" class="mr-2">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="eliminarProducto(element)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-      </mat-card-content>
-    </mat-card>
+<!-- app.component.html -->
+<header class="bg-primary shadow-md">
+  <div class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-white">DIPIER +</h1>
+    <div id="hamb" class="flex items-center space-x-4">
+      <button (click)="toggleMenu()" class="text-white md:hidden focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+    </div>
+    <nav class="hidden md:flex space-x-4">
+      <a href="#" class="text-white hover:text-gray-300">
+        <i class="fas fa-user-circle text-2xl"></i>
+      </a>
+      <a href="#servicios" class="text-fuchsia-50 hover:text-gray-950">Servicios</a>
+      <a href="#beneficios" class="text-fuchsia-50 hover:text-gray-950">Beneficios</a>
+      <a href="#productos" class="text-fuchsia-50 hover:text-gray-950">Productos</a>
+      <a href="#contacto" class="text-fuchsia-50 hover:text-gray-950">Contacto</a>
+    </nav>
   </div>
-</div>
+
+  <!-- Mobile Menu -->
+  <nav #mobileMenu class="mobile-menu md:hidden space-y-4 p-4 bg-primary">
+    <a href="#servicios" class="block text-fuchsia-50 hover:text-gray-950">Servicios</a>
+    <a href="#beneficios" class="block text-fuchsia-50 hover:text-gray-950">Beneficios</a>
+    <a href="#productos" class="block text-fuchsia-50 hover:text-gray-950">Productos</a>
+    <a href="#contacto" class="block text-fuchsia-50 hover:text-gray-950">Contacto</a>
+  </nav>
+</header>
+
+
+<!-- Main Content -->
+<main class="flex-grow">
+  <!-- Hero Section -->
+  <section class="bg-primary-light py-12">
+    <div class="max-w-6xl mx-auto text-center">
+      <img src="https://via.placeholder.com/800x400" alt="Gestión de Fármacos" class="mx-auto mb-6">
+      <h2 class="text-3xl font-bold text-primary mb-4">Bienvenido a DIPIER +</h2>
+      <p class="text-fuchsia-50 mb-8">Tu aliado en la gestión eficiente de inventario y ventas de productos farmacéuticos.</p>
+      <button class="px-6 py-2 text-white bg-secondary rounded-full hover:bg-secondary-dark transition duration-300">
+        Explora Nuestros Servicios
+      </button>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="servicios" class="bg-gray-100 py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center">
+        <img src="https://via.placeholder.com/400x300" alt="Servicios" class="w-full md:w-1/2 mb-6 md:mb-0 md:mr-6">
+        <div>
+          <h3 class="text-2xl font-semibold text-primary mb-4">Nuestros Servicios</h3>
+          <p class="text-secondary">Ofrecemos soluciones personalizadas para optimizar la gestión de inventarios y mejorar la eficiencia en la venta de productos farmacéuticos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section id="beneficios" class="bg-white py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:mr-6">
+          <h3 class="text-2xl font-semibold text-primary mb-4">Beneficios Clave</h3>
+          <ul class="text-secondary space-y-2">
+            <li>Control preciso de inventarios</li>
+            <li>Mejora en la eficiencia logística</li>
+            <li>Atención personalizada al cliente</li>
+          </ul>
+        </div>
+        <img src="https://via.placeholder.com/400x300" alt="Beneficios" class="w-full md:w-1/2 mt-6 md:mt-0">
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section id="productos" class="bg-gray-100 py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center">
+        <img src="https://via.placeholder.com/400x300" alt="Productos" class="w-full md:w-1/2 mb-6 md:mb-0 md:mr-6">
+        <div>
+          <h3 class="text-2xl font-semibold text-primary mb-4">Nuestros Productos</h3>
+          <p class="text-secondary">Descubre nuestra amplia gama de productos farmacéuticos de alta calidad, diseñados para satisfacer las necesidades de nuestros clientes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer id="#contacto" class="bg-primary-dark py-6">
+  <div class="max-w-6xl mx-auto px-4 text-center">
+    <p class="text-white">&copy; 2024 DIPIER +. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+</body>
+</html>

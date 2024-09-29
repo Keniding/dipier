@@ -1,5 +1,6 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+/**
 .light-theme {
   @import '@angular/material/prebuilt-themes/indigo-pink.css';
 }
@@ -7,6 +8,14 @@
 .dark-theme {
   @import '@angular/material/prebuilt-themes/pink-bluegrey.css';
 }
+ */
+
+
+// @tailwind components;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 body {
   margin: 0;

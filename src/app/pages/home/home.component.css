@@ -1,8 +1,7 @@
-.mat-app-background {
-  transition: background-color 0.3s ease, color 0.3s ease;
+.mobile-menu {
+  display: none;
 }
 
-.mat-card {
-  transition: background-color 0.3s ease, color 0.3s ease;
+.mobile-menu.active {
+  display: block;
 }
-
