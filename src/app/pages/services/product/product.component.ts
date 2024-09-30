@@ -13,6 +13,8 @@ import { PLATFORM_ID} from '@angular/core';
 import {ProductService} from "../../../services/product.service";
 import {StoreProductComponent} from "./store-product/store-product.component";
 import {MatDialog} from "@angular/material/dialog";
+import {data} from "autoprefixer";
+import {UpdateProductComponent} from "./update-product/update-product.component";
 
 
 interface Producto {
@@ -106,10 +108,32 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   editarProducto(producto: Producto) {
-    console.log('Editar producto', producto);
+    const dialogRef = this.dialog.open(UpdateProductComponent, {
+      width: '400px',
+      data: producto
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Producto editado exitosamente');
+        this.loadProducts();
+      }
+    });
   }
 
   eliminarProducto(producto: Producto) {
-    console.log('Eliminar producto', producto);
+    if (isPlatformBrowser(this.platformId)) {
+      this.productService.deleteProduct(producto.id).subscribe(
+        {
+          next: () => {
+            console.log('Eliminado: ', producto.id)
+            this.loadProducts()
+          },
+          error: (error) => {
+            console.log('error')
+          }
+        }
+      )
+    }
   }
 }

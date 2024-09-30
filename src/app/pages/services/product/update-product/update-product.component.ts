@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ProductService} from "../../../../services/product.service";
 import {MatFormField, MatFormFieldModule} from "@angular/material/form-field";
 import {MatInput, MatInputModule} from "@angular/material/input";
@@ -9,9 +9,18 @@ import {MatOption, MatSelect, MatSelectModule} from "@angular/material/select";
 import {isPlatformBrowser, NgForOf} from "@angular/common";
 import {Category, CategoryService} from "../../../../services/category.service";
 
+interface Producto {
+  id: string;
+  name: string;
+  description: string;
+  skuCode: string;
+  price: number;
+  categories: { id: string; name: string }[];
+}
+
 @Component({
-  selector: 'app-store-product',
-  templateUrl: './store-product.component.html',
+  selector: 'app-update-product',
+  templateUrl: './update-product.component.html',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -26,25 +35,28 @@ import {Category, CategoryService} from "../../../../services/category.service";
     NgForOf,
     MatSelectModule
   ],
-  styleUrls: ['./store-product.component.css']
+  styleUrls: ['./update-product.component.css']
 })
-export class StoreProductComponent implements OnInit {
+export class UpdateProductComponent implements OnInit {
   productForm: FormGroup;
   categories: Category[] = [];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
-    private dialogRef: MatDialogRef<StoreProductComponent>,
+    private dialogRef: MatDialogRef<UpdateProductComponent>,
     @Inject(PLATFORM_ID) private platformId: Object,
     private categoryService: CategoryService,
+    @Inject(MAT_DIALOG_DATA) public data: Producto
   ) {
+    const categories = data?.categories ?? [];
     this.productForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.required],
-      skuCode: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(0)]],
-      categories: [[], Validators.required]
+      id: [data.id, Validators.required],
+      name: [data.name, Validators.required],
+      description: [data.description, Validators.required],
+      skuCode: [data.skuCode, Validators.required],
+      price: [data.price, [Validators.required, Validators.min(0)]],
+      categories: [categories.map(c => c.id), Validators.required]
     });
   }
 
@@ -85,7 +97,7 @@ export class StoreProductComponent implements OnInit {
         categories: productData.categories.map((categoryId: string) => ({ id: categoryId }))
       };
 
-      this.productService.storeProduct(productRequest).subscribe({
+      this.productService.updateProduct(productRequest.id, productRequest).subscribe({
         next: (product) => {
           console.log('Producto guardado:', product);
           this.dialogRef.close(true);
