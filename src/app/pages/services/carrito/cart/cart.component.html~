@@ -1,0 +1,72 @@
+<div class="flex items-center justify-center min-h-screen">
+  <div class="container p-6 bg-white rounded-lg shadow-lg max-w-md">
+    <h1 class="text-4xl font-extrabold text-center text-blue-600 mb-6 relative">
+      Proceso de Compra
+      <span class="absolute inset-x-0 bottom-0 h-1 bg-blue-300 transform scale-x-50 transition-all duration-300"></span>
+    </h1>
+
+    <div class="progress mb-4">
+      <div class="step" [class.completed]="currentStep >= 1">
+        <div class="step-circle">1</div>
+        <div class="step-name">Productos</div>
+      </div>
+      <div class="step" [class.completed]="currentStep >= 2">
+        <div class="step-circle">2</div>
+        <div class="step-name">Método de Pago</div>
+      </div>
+      <div class="step" [class.completed]="currentStep === 3">
+        <div class="step-circle">3</div>
+        <div class="step-name">Confirmación</div>
+      </div>
+    </div>
+
+    <div *ngIf="currentStep === 1" class="cart-items">
+      <h2 class="text-2xl font-bold mb-4">Carrito de Compras</h2>
+      <div *ngFor="let item of cartItems" class="flex justify-between items-center border-b py-4">
+        <div class="flex items-center">
+          <img src="https://via.placeholder.com/50" alt="{{ item.name }}" class="mr-4 rounded-md shadow">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">{{ item.name }}</h2>
+            <p class="text-gray-600">Precio: <span class="text-green-500">${{ item.price }}</span></p>
+            <p class="text-gray-600">Cantidad: <span class="font-bold">{{ item.quantity }}</span></p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <button (click)="removeItem(item.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Eliminar</button>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h2 class="text-xl font-bold text-gray-800">Total: <span class="text-green-600">${{ totalPrice() }}</span></h2>
+      </div>
+
+      <button (click)="nextStep()" class="mt-6 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">Continuar a Método de Pago</button>
+    </div>
+
+    <div *ngIf="currentStep === 2">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-4">Método de Pago</h2>
+      <div class="payment-methods">
+        <div class="payment-option mb-4">
+          <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
+          <label for="credit-card" class="ml-2">Tarjeta de Crédito</label>
+        </div>
+        <div class="payment-option mb-4">
+          <input type="radio" id="paypal" name="payment-method" value="paypal">
+          <label for="paypal" class="ml-2">PayPal</label>
+        </div>
+        <div class="payment-option mb-4">
+          <input type="radio" id="bank-transfer" name="payment-method" value="bank-transfer">
+          <label for="bank-transfer" class="ml-2">Transferencia Bancaria</label>
+        </div>
+      </div>
+      <button (click)="prevStep()" class="mr-4 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">Atrás</button>
+      <button (click)="confirmPayment()" class="mt-6 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">Confirmar Pago</button>
+    </div>
+
+    <div *ngIf="currentStep === 3" class="confirmation">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-4">¡Gracias por tu compra!</h2>
+      <p class="text-gray-800">Tu pedido ha sido confirmado. Recibirás un correo con los detalles.</p>
+      <button (click)="prevStep()" class="mt-6 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">Atrás</button>
+    </div>
+  </div>
+</div>

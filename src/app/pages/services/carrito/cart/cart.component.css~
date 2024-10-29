@@ -1,0 +1,79 @@
+/* cart.component.css */
+html, body {
+  height: 100%; /* Asegúrate de que el cuerpo ocupe toda la altura */
+  margin: 0; /* Elimina márgenes por defecto */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+}
+
+.container {
+  max-width: 600px; /* Ancho máximo del contenedor */
+  width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho disponible */
+  padding: 20px; /* Espaciado interno */
+  background-color: white; /* Color de fondo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.container {
+  max-width: 600px;
+}
+
+.cart-items {
+  margin-bottom: 20px;
+}
+
+.payment-methods {
+  margin-top: 20px;
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #f0f0f0;
+}
+
+.step.completed .step-circle {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.step-name {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.step:not(:last-child) {
+  margin-right: 20px;
+}
