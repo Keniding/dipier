@@ -6,7 +6,7 @@ import {MatButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {MatToolbar} from "@angular/material/toolbar";
 import {Router} from "@angular/router";
-import {CartServiceServiceBusiness} from "../../../services/business/cart-service-business.service";
+import {CartService} from "../../../services/business/cart-service.service-business";
 
 interface Customer {
   id: string;
@@ -46,7 +46,7 @@ export class CustomerComponent implements OnInit {
     private customerService: CustomerService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private cartServiceServiceBusiness: CartServiceServiceBusiness
+    private cartService: CartService
   ) {
   }
 
@@ -80,7 +80,7 @@ export class CustomerComponent implements OnInit {
   }
 
   navigateToCart(customerId: string) {
-    this.cartServiceServiceBusiness.setCustomerId(customerId);
+    this.cartService.setCustomerId(customerId);
     this.router.navigate(['/cart']).then(r => console.log(r));
   }
 }

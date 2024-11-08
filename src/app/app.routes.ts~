@@ -18,10 +18,6 @@ export const routes: Routes = [
   // { path: 'cart', component: CartComponent },
   { path: 'cart', component: CartComponent },
   { path: '', component: LoginFormComponent },
-
-  { path: 'cart/:customerId', component: CartComponent },
-
   // Ruta comodín para manejar 404
   { path: '**', component: NotFoundComponent }
-
 ];

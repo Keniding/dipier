@@ -1,0 +1,41 @@
+<div class="flex items-center justify-center min-h-screen">
+  <div class="container p-6 bg-white rounded-lg shadow-lg max-w-md">
+    <div class="text-sm text-gray-600">
+      <span class="font-semibold">ID Cliente:</span>
+      <span class="ml-2">{{ customerId }}</span>
+    </div>
+    <div class="flex justify-end mb-4">
+      <button
+        [routerLink]="['/customer']"
+        class="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+        <i class="fas fa-users mr-2"></i>
+        <span>Mis Clientes</span>
+      </button>
+    </div>
+
+    <h1 class="text-4xl font-extrabold text-center text-green-600 mb-6 relative">
+      Proceso de Compra
+      <span class="absolute inset-x-0 bottom-0 h-1 bg-green-300 transform scale-x-50 transition-all duration-300"></span>
+    </h1>
+
+    <app-progress-steps [currentStep]="currentStep"></app-progress-steps>
+
+    <app-cart-items
+      *ngIf="currentStep === 1"
+      [cartItems]="cartItems"
+      (removeItemEvent)="removeItem($event)"
+      (nextStepEvent)="nextStep()"
+    ></app-cart-items>
+
+    <app-payment-method
+      *ngIf="currentStep === 2"
+      (prevStepEvent)="prevStep()"
+      (confirmPaymentEvent)="confirmPayment()"
+    ></app-payment-method>
+
+    <app-confirmation
+      *ngIf="currentStep === 3"
+      (prevStepEvent)="prevStep()"
+    ></app-confirmation>
+  </div>
+</div>

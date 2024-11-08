@@ -1,0 +1,23 @@
+<div>
+  <h2 class="text-2xl font-bold text-center text-green-600 mb-4">Método de Pago</h2>
+  <div class="payment-methods">
+    <div class="payment-option mb-4">
+      <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
+      <label for="credit-card" class="ml-2">Tarjeta de Crédito</label>
+    </div>
+    <div class="payment-option mb-4">
+      <input type="radio" id="paypal" name="payment-method" value="paypal">
+      <label for="paypal" class="ml-2">PayPal</label>
+    </div>
+    <div class="payment-option mb-4">
+      <input type="radio" id="bank-transfer" name="payment-method" value="bank-transfer">
+      <label for="bank-transfer" class="ml-2">Transferencia Bancaria</label>
+    </div>
+  </div>
+  <button (click)="onPrevStep()" class="mr-4 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">
+    Atrás
+  </button>
+  <button (click)="onConfirmPayment()" class="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">
+    Confirmar Pago
+  </button>
+</div>

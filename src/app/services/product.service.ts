@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import {BaseApiService} from "./common/base-api-service.service";
 
 interface Producto {
   id: string;
@@ -23,35 +24,21 @@ interface ProductRequest {
 @Injectable({
   providedIn: 'root'
 })
-export class ProductService {
+export class ProductService  extends BaseApiService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
-
-  private createHeaders(contentType: string = 'application/json'): HttpHeaders {
-    let headers = new HttpHeaders({
-      'Content-Type': contentType
-    });
-
-    if (typeof window !== 'undefined') {
-      try {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-          headers = headers.set('Authorization', `Bearer ${token}`);
-        } else {
-          console.warn('No token found in localStorage');
-        }
-      } catch (error) {
-        console.error('Error accessing localStorage', error);
-      }
-    }
-
-    return headers;
+  constructor(private http: HttpClient) {
+    super();
   }
 
   getProducts(): Observable<Producto[]> {
     const headers = this.createHeaders();
     return this.http.get<Producto[]>(`${this.apiUrl}/product`, { headers });
+  }
+
+  getProduct(productId: string): Observable<Producto> {
+    const headers = this.createHeaders();
+    return this.http.get<Producto>(`${this.apiUrl}/product/${productId}`, { headers });
   }
 
   storeProduct(productRequest: ProductRequest): Observable<Producto> {

@@ -1,0 +1,24 @@
+<div class="cart-items">
+  <h2 class="text-2xl font-bold mb-4">Carrito de Compras</h2>
+  <div *ngFor="let item of cartItems" class="flex justify-between items-center border-b py-4">
+    <div class="flex items-center">
+      <img src="https://via.placeholder.com/50" alt="{{ item.name }}" class="mr-4 rounded-md shadow">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">{{ item.name }}</h2>
+        <p class="text-gray-600">Precio: <span class="text-green-500">${{ item.price }}</span></p>
+        <p class="text-gray-600">Cantidad: <span class="font-bold">{{ item.quantity }}</span></p>
+      </div>
+    </div>
+    <div class="flex items-center">
+      <button (click)="onRemoveItem(item.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Eliminar</button>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <h2 class="text-xl font-bold text-gray-800">Total: <span class="text-green-600">${{ totalPrice() }}</span></h2>
+  </div>
+
+  <button (click)="onNextStep()" class="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">
+    Continuar a Método de Pago
+  </button>
+</div>

@@ -55,6 +55,13 @@
           Más Información
         </button>
       </mat-card-actions>
+      <mat-card-actions class="flex justify-end p-4">
+        <button mat-button
+                class="bg-blue-500 text-white hover:bg-blue-600 transition-colors rounded-full px-4 py-2"
+                (click)="navigateToCart(customer.id); $event.stopPropagation();">
+          Ir al Carrito
+        </button>
+      </mat-card-actions>
     </mat-card>
   </div>
 
