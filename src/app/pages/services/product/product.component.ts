@@ -1,20 +1,19 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import {CommonModule, DOCUMENT, NgOptimizedImage} from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Subscription } from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID} from '@angular/core';
 import {ProductService} from "../../../services/product.service";
 import {StoreProductComponent} from "./store-product/store-product.component";
 import {MatDialog} from "@angular/material/dialog";
-import {data} from "autoprefixer";
 import {UpdateProductComponent} from "./update-product/update-product.component";
+import {MinioService} from "../../../services/minio.service";
 
 
 interface Producto {
@@ -24,14 +23,8 @@ interface Producto {
   skuCode: string;
   price: number;
   categories: { id: string; name: string }[];
-}
 
-interface ProductRequest {
-  name: string;
-  description: string;
-  skuCode: string;
-  price: number;
-  categories: { id: string; name: string }[];
+  imageUrl?: string;
 }
 
 @Component({
@@ -44,22 +37,22 @@ interface ProductRequest {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
+    NgOptimizedImage,
   ],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit, OnDestroy {
   product: Producto[] = [];
-
-  displayedColumns: string[] = ['id', 'name', 'price', 'acciones'];
+  displayedColumns: string[] = ['imagen', 'id', 'name', 'price', 'acciones'];
   dataSource = new MatTableDataSource<Producto>();
-  isDarkTheme = false;
   private themeSubscription: Subscription | undefined;
+  private readonly defaultImageUrl = 'https://via.placeholder.com/50';
 
   constructor(
     private productService: ProductService,
+    private minioService: MinioService,
     @Inject(DOCUMENT) private document: Document,
-    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
     private dialog: MatDialog
   ) {}
@@ -73,19 +66,69 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.productService.getProducts().subscribe({
         next: (data) => {
           this.product = data;
+          this.product.forEach(product => {
+            this.loadProductImage(product);
+          });
           this.dataSource.data = data;
-          console.log('Datos recibidos:', data);
         },
         error: (error) => {
-          console.error('Error al cargar las categorías:', error);
-        },
-        complete: () => {
-          console.log('Carga de categorías completada');
+          console.error('Error al cargar los productos:', error);
         }
       });
-    } else {
-      console.error('localStorage no está disponible en este entorno');
     }
+  }
+
+  loadProductImage(product: Producto) {
+    this.minioService.getObjectById(product.id).subscribe({
+      next: (response) => {
+        if (response && response.length > 0 && response[0].estado === 'exitoso') {
+          product.imageUrl = response[0].url;
+        } else {
+          product.imageUrl = this.defaultImageUrl;
+        }
+        this.dataSource.data = [...this.dataSource.data];
+      },
+      error: (error) => {
+        console.error('Error al cargar la imagen:', error);
+        product.imageUrl = this.defaultImageUrl;
+        this.dataSource.data = [...this.dataSource.data];
+      }
+    });
+  }
+
+  async uploadImage(producto: Producto) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        try {
+          this.minioService.uploadFile(file, producto.id).subscribe({
+            next: (response) => {
+              if (response && response.length > 0 && response[0].estado === 'exitoso') {
+                producto.imageUrl = response[0].url;
+                this.dataSource.data = [...this.dataSource.data];
+              } else {
+                console.error('Error: Respuesta de carga no válida');
+              }
+            },
+            error: (error) => {
+              console.error('Error al subir la imagen:', error);
+            }
+          });
+        } catch (error) {
+          console.error('Error al procesar la imagen:', error);
+        }
+      }
+    };
+
+    input.click();
+  }
+
+  onImageError(event: any) {
+    event.target.src = this.defaultImageUrl;
   }
 
   ngOnDestroy(): void {
@@ -130,7 +173,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             this.loadProducts()
           },
           error: (error) => {
-            console.log('error')
+            console.log('error' + error)
           }
         }
       )

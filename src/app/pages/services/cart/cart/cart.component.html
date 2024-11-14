@@ -1,10 +1,11 @@
-<div class="flex items-center justify-center min-h-screen">
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
   <div class="container p-6 bg-white rounded-lg shadow-lg max-w-md">
-    <div class="text-sm text-gray-600">
-      <span class="font-semibold">ID Cliente:</span>
-      <span class="ml-2">{{ customerId }}</span>
-    </div>
-    <div class="flex justify-end mb-4">
+    <!-- Header con ID de Cliente -->
+    <div class="flex justify-between items-center mb-4">
+      <div class="text-sm text-gray-600">
+        <span class="font-semibold">ID Cliente:</span>
+        <span class="ml-2">{{ customerId }}</span>
+      </div>
       <button
         [routerLink]="['/customer']"
         class="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
@@ -13,30 +14,73 @@
       </button>
     </div>
 
+    <!-- Título principal -->
     <h1 class="text-4xl font-extrabold text-center text-green-600 mb-6 relative">
       Proceso de Compra
-      <span class="absolute inset-x-0 bottom-0 h-1 bg-green-300 transform scale-x-50 transition-all duration-300"></span>
+      <span class="absolute inset-x-0 bottom-0 h-1 bg-green-300 transform"
+            [ngClass]="{'scale-x-50': currentStep === 1, 'scale-x-75': currentStep === 2, 'scale-x-100': currentStep === 3}"
+            style="transition: transform 0.3s ease-in-out"></span>
     </h1>
 
-    <app-progress-steps [currentStep]="currentStep"></app-progress-steps>
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+      <p class="mt-4 text-gray-600">Cargando información...</p>
+    </div>
 
-    <app-cart-items
-      *ngIf="currentStep === 1"
-      [cartProducts]="cartProducts"
-      (removeItemEvent)="removeItem($event)"
-      (updateQuantityEvent)="updateQuantity($event.productId, $event.quantity)"
-      (nextStepEvent)="nextStep()"
-    ></app-cart-items>
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+      <strong class="font-bold">Error!</strong>
+      <span class="block sm:inline"> {{ error }}</span>
+      <button
+        (click)="error = null"
+        class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <span class="sr-only">Cerrar</span>
+        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <title>Cerrar</title>
+          <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+        </svg>
+      </button>
+    </div>
 
-    <app-payment-method
-      *ngIf="currentStep === 2"
-      (prevStepEvent)="prevStep()"
-      (confirmPaymentEvent)="confirmPayment()"
-    ></app-payment-method>
+    <!-- Componente de pasos -->
+    <app-progress-steps
+      [currentStep]="currentStep"
+      class="mb-6">
+    </app-progress-steps>
 
-    <app-confirmation
-      *ngIf="currentStep === 3"
-      (prevStepEvent)="prevStep()"
-    ></app-confirmation>
+    <!-- Contenido principal -->
+    <div *ngIf="!loading && !error">
+      <app-cart-items
+        *ngIf="currentStep === 1"
+        [cartProducts]="cartProducts"
+        (removeItemEvent)="removeItem($event)"
+        (updateQuantityEvent)="updateQuantity($event.productId, $event.quantity)"
+        (nextStepEvent)="nextStep()"
+        class="animate-fadeIn">
+      </app-cart-items>
+
+      <app-payment-method
+        *ngIf="currentStep === 2"
+        (prevStepEvent)="prevStep()"
+        (confirmPaymentEvent)="confirmPayment()"
+        class="animate-fadeIn">
+      </app-payment-method>
+
+      <app-confirmation
+        *ngIf="currentStep === 3"
+        (prevStepEvent)="prevStep()"
+        class="animate-fadeIn">
+      </app-confirmation>
+    </div>
+
+    <!-- Botón para reintentar en caso de error -->
+    <div *ngIf="error" class="text-center mt-4">
+      <button
+        (click)="retryLoad()"
+        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+        Reintentar
+      </button>
+    </div>
   </div>
 </div>

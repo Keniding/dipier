@@ -3,6 +3,37 @@
 
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
+    <!-- Imagen -->
+    <div class="col-span-1 sm:col-span-2">
+      <div class="flex flex-col space-y-2">
+        <label class="text-sm text-gray-700">Imagen del producto</label>
+
+        <!-- Preview de la imagen -->
+        <div *ngIf="imagePreview" class="mb-2">
+          <img [src]="imagePreview" alt="Preview" class="w-32 h-32 object-cover rounded-lg">
+        </div>
+
+        <!-- Input de archivo con estilo personalizado -->
+        <div class="flex items-center space-x-2">
+          <button type="button"
+                  mat-stroked-button
+                  (click)="fileInput.click()"
+                  class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+            Seleccionar imagen
+          </button>
+          <span *ngIf="selectedFile" class="text-sm text-gray-600">
+        {{ selectedFile.name }}
+      </span>
+        </div>
+        <input #fileInput
+               type="file"
+               (change)="onFileSelected($event)"
+               accept="image/*"
+               class="hidden"
+               formControlName="imageFile">
+      </div>
+    </div>
+
     <!-- Nombre -->
     <mat-form-field class="col-span-1 sm:col-span-2">
       <mat-label>Nombre</mat-label>

@@ -6,6 +6,15 @@ export abstract class BaseApiService {
       'Content-Type': contentType
     });
 
+    return this.addAuthorizationHeader(headers);
+  }
+
+  protected createUploadHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    return this.addAuthorizationHeader(headers);
+  }
+
+  private addAuthorizationHeader(headers: HttpHeaders): HttpHeaders {
     if (typeof window !== 'undefined') {
       try {
         const token = localStorage.getItem('authToken');
@@ -18,7 +27,6 @@ export abstract class BaseApiService {
         console.error('Error accessing localStorage', error);
       }
     }
-
     return headers;
   }
 }

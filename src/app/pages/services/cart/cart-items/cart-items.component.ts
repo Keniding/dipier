@@ -5,6 +5,8 @@ interface Producto {
   skuCode: string;
   price: number;
   categories: { id: string; name: string }[];
+
+  imageUrl?: string
 }
 
 interface CartItem {
@@ -37,10 +39,13 @@ interface Customer {
 interface CartProductItem extends Producto, CartItem {
   updating?: boolean;
   error?: string;
+  imageLoading?: boolean;
+  imageError?: boolean;
+  imageLoaded?: boolean;
 }
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { NgForOf, NgIf, CurrencyPipe } from "@angular/common";
+import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {NgForOf, NgIf, CurrencyPipe, NgOptimizedImage, NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-cart-items',
@@ -48,16 +53,45 @@ import { NgForOf, NgIf, CurrencyPipe } from "@angular/common";
   imports: [
     NgForOf,
     NgIf,
-    CurrencyPipe
+    NgClass,
+    CurrencyPipe,
+    NgOptimizedImage
   ],
   templateUrl: './cart-items.component.html',
   styleUrl: './cart-items.component.css'
 })
-export class CartItemsComponent {
+export class CartItemsComponent implements OnInit {
   @Input() cartProducts: CartProductItem[] = [];
   @Output() removeItemEvent = new EventEmitter<string>();
   @Output() updateQuantityEvent = new EventEmitter<{productId: string, quantity: number}>();
   @Output() nextStepEvent = new EventEmitter<void>();
+
+  protected readonly defaultImageUrl = 'https://via.placeholder.com/50';
+  isLoading = true;
+
+  ngOnInit() {
+    console.log('CartProducts recibidos:', this.cartProducts);
+
+    this.cartProducts = this.cartProducts.map(product => ({
+      ...product,
+      imageLoaded: false,
+      imageError: false,
+      imageUrl: product.imageUrl || this.defaultImageUrl
+    }));
+
+    this.isLoading = false;
+  }
+
+  onImageLoad(product: CartProductItem): void {
+    product.imageLoaded = true;
+    product.imageError = false;
+  }
+
+  onImageError(product: CartProductItem): void {
+    product.imageError = true;
+    product.imageLoaded = false;
+    product.imageUrl = this.defaultImageUrl;
+  }
 
   handleQuantityChange(product: CartProductItem, newQuantity: number): void {
     if (newQuantity < 1 || product.updating) return;

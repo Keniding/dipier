@@ -6,8 +6,11 @@ import {MatFormField, MatFormFieldModule} from "@angular/material/form-field";
 import {MatInput, MatInputModule} from "@angular/material/input";
 import {MatButton, MatButtonModule} from "@angular/material/button";
 import {MatOption, MatSelect, MatSelectModule} from "@angular/material/select";
-import {isPlatformBrowser, NgForOf} from "@angular/common";
+import {isPlatformBrowser, NgForOf, NgIf} from "@angular/common";
 import {Category, CategoryService} from "../../../../services/category.service";
+import {MinioService} from "../../../../services/minio.service";
+import { Observable, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-store-product',
@@ -24,13 +27,16 @@ import {Category, CategoryService} from "../../../../services/category.service";
     MatSelect,
     MatOption,
     NgForOf,
-    MatSelectModule
+    MatSelectModule,
+    NgIf
   ],
   styleUrls: ['./store-product.component.css']
 })
 export class StoreProductComponent implements OnInit {
   productForm: FormGroup;
   categories: Category[] = [];
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -38,13 +44,15 @@ export class StoreProductComponent implements OnInit {
     private dialogRef: MatDialogRef<StoreProductComponent>,
     @Inject(PLATFORM_ID) private platformId: Object,
     private categoryService: CategoryService,
+    private minioService: MinioService
   ) {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
       skuCode: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
-      categories: [[], Validators.required]
+      categories: [[], Validators.required],
+      imageFile: [null]
     });
   }
 
@@ -71,6 +79,48 @@ export class StoreProductComponent implements OnInit {
     this.getCategory()
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  private uploadImage(file: File, productId: string): Observable<any> {
+    return new Observable(observer => {
+      this.minioService.uploadFile(file, productId).subscribe({
+        next: (response) => {
+          console.log('Respuesta del servidor para imagen:', response);
+          observer.next(response);
+          observer.complete();
+        },
+        error: (error) => {
+          console.error('Error al subir la imagen:', error);
+          observer.error(error);
+        }
+      });
+    });
+  }
+
+  private handleImageUploadError(productId: string) {
+    this.productService.deleteProduct(productId).subscribe({
+      next: () => {
+        console.log('Producto eliminado debido a fallo en subida de imagen');
+        alert('Error al subir la imagen. El producto ha sido eliminado.');
+      },
+      error: (error) => {
+        console.error('Error al eliminar producto después de fallo en subida de imagen:', error);
+        alert('Error al procesar la solicitud. Por favor, inténtelo de nuevo.');
+      }
+    });
+  }
+
   onSubmit(): void {
     if (this.productForm.valid) {
       const productData = this.productForm.value;
@@ -85,13 +135,33 @@ export class StoreProductComponent implements OnInit {
         categories: productData.categories.map((categoryId: string) => ({ id: categoryId }))
       };
 
-      this.productService.storeProduct(productRequest).subscribe({
-        next: (product) => {
-          console.log('Producto guardado:', product);
+      this.productService.storeProduct(productRequest).pipe(
+        switchMap(productResponse => {
+          console.log('Producto guardado:', productResponse);
+
+          if (this.selectedFile) {
+            return this.uploadImage(this.selectedFile, productResponse.id).pipe(
+              map(imageResponse => ({
+                product: productResponse,
+                image: imageResponse
+              }))
+            );
+          } else {
+            return of({ product: productResponse });
+          }
+        })
+      ).subscribe({
+        next: (result) => {
+          console.log('Operación completada:', result);
+          alert('Producto guardado exitosamente');
           this.dialogRef.close(true);
         },
         error: (error) => {
-          console.error('Error al guardar el producto:', error);
+          console.error('Error en la operación:', error);
+          if (error.product) {
+            this.handleImageUploadError(error.product.id);
+          }
+          alert('Error al guardar el producto. Por favor, inténtelo de nuevo.');
         }
       });
     }
