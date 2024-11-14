@@ -1,24 +1,46 @@
 <div class="cart-items">
   <h2 class="text-2xl font-bold mb-4">Carrito de Compras</h2>
-  <div *ngFor="let item of cartItems" class="flex justify-between items-center border-b py-4">
+  <div *ngFor="let product of cartProducts" class="flex justify-between items-center border-b py-4">
     <div class="flex items-center">
-      <img src="https://via.placeholder.com/50" alt="{{ item.productId }}" class="mr-4 rounded-md shadow">
+      <!-- Corregido el manejo de la imagen -->
+      <img [src]="'https://via.placeholder.com/50'"
+           [alt]="product.name"
+           class="mr-4 rounded-md shadow w-12 h-12 object-cover">
       <div>
-        <h2 class="text-xl font-semibold text-gray-800">{{ item.productId }}</h2>
-        <p class="text-gray-600">Precio: <span class="text-green-500">${{ item.id }}</span></p>
-        <p class="text-gray-600">Cantidad: <span class="font-bold">{{ item.quantity }}</span></p>
+        <h2 class="text-xl font-semibold text-gray-800">{{ product.name }}</h2>
+        <p class="text-gray-600">Precio: <span class="text-green-500">{{ product.price | currency }}</span></p>
+        <div class="flex items-center mt-2">
+          <button (click)="handleQuantityChange(product, product.quantity - 1)"
+                  [disabled]="product.quantity <= 1 || product.updating"
+                  class="bg-gray-200 px-2 py-1 rounded-l hover:bg-gray-300 disabled:opacity-50">-</button>
+          <span class="bg-gray-100 px-4 py-1">
+            {{ product.quantity }}
+            <span *ngIf="product.updating" class="text-xs text-gray-500">(actualizando...)</span>
+          </span>
+          <button (click)="handleQuantityChange(product, product.quantity + 1)"
+                  [disabled]="product.updating"
+                  class="bg-gray-200 px-2 py-1 rounded-r hover:bg-gray-300 disabled:opacity-50">+</button>
+        </div>
+        <div *ngIf="product.error" class="text-red-500 text-sm mt-1">
+          {{ product.error }}
+        </div>
       </div>
     </div>
     <div class="flex items-center">
-      <button (click)="onRemoveItem(item.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Eliminar</button>
+      <button (click)="onRemoveItem(product.id)"
+              class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
+        Eliminar
+      </button>
     </div>
   </div>
 
   <div class="mt-6">
-    <h2 class="text-xl font-bold text-gray-800">Total: <span class="text-green-600">${{ totalPrice() }}</span></h2>
+    <h2 class="text-xl font-bold text-gray-800">Total: <span class="text-green-600">{{ calculateTotal() | currency }}</span></h2>
   </div>
 
-  <button (click)="onNextStep()" class="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">
+  <button (click)="onNextStep()"
+          [disabled]="hasUpdatingItems()"
+          class="mt-6 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition disabled:opacity-50">
     Continuar a Método de Pago
   </button>
 </div>

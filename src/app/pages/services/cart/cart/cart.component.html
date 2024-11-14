@@ -22,8 +22,9 @@
 
     <app-cart-items
       *ngIf="currentStep === 1"
-      [cartItems]="cartItems"
+      [cartProducts]="cartProducts"
       (removeItemEvent)="removeItem($event)"
+      (updateQuantityEvent)="updateQuantity($event.productId, $event.quantity)"
       (nextStepEvent)="nextStep()"
     ></app-cart-items>
 
