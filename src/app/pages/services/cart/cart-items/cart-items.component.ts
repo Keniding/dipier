@@ -1,50 +1,7 @@
-interface Producto {
-  id: string;
-  name: string;
-  description: string;
-  skuCode: string;
-  price: number;
-  categories: { id: string; name: string }[];
 
-  imageUrl?: string
-}
+import { CartProductItem } from '../../../../models/cart.types';
 
-interface CartItem {
-  id: string;
-  productId: string;
-  quantity: number;
-}
-
-interface Cart {
-  id: string;
-  customerId: string;
-  items: CartItem[];
-  status: 'ACTIVE' | 'ARCHIVED' | 'COMPLETED' | 'EXPIRED';
-  createdDate: Date;
-}
-
-interface Customer {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  address: string;
-  allergies: string[];
-  chronicConditions: string[];
-  lastVisit: Date;
-}
-
-interface CartProductItem extends Producto, CartItem {
-  updating?: boolean;
-  error?: string;
-  imageLoading?: boolean;
-  imageError?: boolean;
-  imageLoaded?: boolean;
-}
-
-import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Input, Output, EventEmitter, OnInit, OnDestroy} from '@angular/core';
 import {NgForOf, NgIf, CurrencyPipe, NgOptimizedImage, NgClass} from "@angular/common";
 
 @Component({
@@ -60,7 +17,7 @@ import {NgForOf, NgIf, CurrencyPipe, NgOptimizedImage, NgClass} from "@angular/c
   templateUrl: './cart-items.component.html',
   styleUrl: './cart-items.component.css'
 })
-export class CartItemsComponent implements OnInit {
+export class CartItemsComponent implements OnInit, OnDestroy {
   @Input() cartProducts: CartProductItem[] = [];
   @Output() removeItemEvent = new EventEmitter<string>();
   @Output() updateQuantityEvent = new EventEmitter<{productId: string, quantity: number}>();
@@ -68,6 +25,7 @@ export class CartItemsComponent implements OnInit {
 
   protected readonly defaultImageUrl = 'https://via.placeholder.com/50';
   isLoading = true;
+  private updateTimers: Map<string, NodeJS.Timeout> = new Map();
 
   ngOnInit() {
     console.log('CartProducts recibidos:', this.cartProducts);
@@ -76,62 +34,69 @@ export class CartItemsComponent implements OnInit {
       ...product,
       imageLoaded: false,
       imageError: false,
-      imageUrl: product.imageUrl || this.defaultImageUrl
+      imageUrl: product.imageUrl || this.defaultImageUrl,
+      updating: false
     }));
 
     this.isLoading = false;
   }
 
+  ngOnDestroy() {
+    this.updateTimers.forEach(timer => clearTimeout(timer));
+    this.updateTimers.clear();
+  }
+
   onImageLoad(product: CartProductItem): void {
     product.imageLoaded = true;
     product.imageError = false;
+    product.imageLoading = false;
   }
 
   onImageError(product: CartProductItem): void {
     product.imageError = true;
     product.imageLoaded = false;
+    product.imageLoading = false;
     product.imageUrl = this.defaultImageUrl;
   }
 
   handleQuantityChange(product: CartProductItem, newQuantity: number): void {
     if (newQuantity < 1 || product.updating) return;
 
-    const originalQuantity = product.quantity;
+    if (this.updateTimers.has(product.id)) {
+      clearTimeout(this.updateTimers.get(product.id));
+      this.updateTimers.delete(product.id);
+    }
+
     product.updating = true;
     product.error = undefined;
-    product.quantity = newQuantity;
-
-    this.updateQuantityEvent.emit({
-      productId: product.id,
-      quantity: newQuantity
-    });
 
     const timer = setTimeout(() => {
       if (product.updating) {
         product.error = 'La actualización está tardando más de lo esperado...';
       }
+      this.updateTimers.delete(product.id);
     }, 5000);
 
-    // Simulación de respuesta del servidor
-    setTimeout(() => {
-      clearTimeout(timer);
-      if (Math.random() > 0.5) {
-        product.updating = false;
-        product.error = undefined;
-      } else {
-        product.quantity = originalQuantity;
-        product.error = 'Error al actualizar la cantidad';
-        product.updating = false;
-      }
-    }, 2000 + Math.random() * 4000);
+    this.updateTimers.set(product.id, timer);
+
+    this.updateQuantityEvent.emit({
+      productId: product.productId,
+      quantity: newQuantity
+    });
   }
 
   onRemoveItem(productId: string): void {
-    this.removeItemEvent.emit(productId);
+    const product = this.cartProducts.find(p => p.id === productId);
+    if (product && !product.updating) {
+      product.updating = true;
+      this.removeItemEvent.emit(productId);
+    }
   }
 
   onNextStep(): void {
-    this.nextStepEvent.emit();
+    if (!this.hasUpdatingItems()) {
+      this.nextStepEvent.emit();
+    }
   }
 
   calculateTotal(): number {

@@ -22,7 +22,7 @@ interface Cart {
   providedIn: 'root'
 })
 export class CartService extends BaseApiService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/cart`;
 
   constructor(private http: HttpClient) {
     super();
@@ -30,22 +30,22 @@ export class CartService extends BaseApiService {
 
   getCart(customerId: string): Observable<Cart> {
     const headers = this.createHeaders();
-    return this.http.get<Cart>(`${this.apiUrl}/cart/${customerId}/cart`, { headers });
+    return this.http.get<Cart>(`${this.apiUrl}/${customerId}/cart`, { headers });
   }
 
   getCartItems(customerId: string): Observable<CartItem[]> {
     const headers = this.createHeaders();
-    return this.http.get<CartItem[]>(`${this.apiUrl}/cart/${customerId}/items`, { headers });
+    return this.http.get<CartItem[]>(`${this.apiUrl}/${customerId}/items`, { headers });
   }
 
   addItemToCart(customerId: string, item: CartItem): Observable<void> {
     const headers = this.createHeaders();
-    return this.http.post<void>(`${this.apiUrl}/cart/${customerId}/add`, item, { headers });
+    return this.http.post<void>(`${this.apiUrl}/${customerId}/add`, item, { headers });
   }
 
   removeItemFromCart(customerId: string, productId: string): Observable<void> {
     const headers = this.createHeaders();
-    return this.http.delete<void>(`${this.apiUrl}/cart/${customerId}/remove`, {
+    return this.http.delete<void>(`${this.apiUrl}/${customerId}/remove`, {
       headers,
       body: productId
     });
@@ -54,7 +54,7 @@ export class CartService extends BaseApiService {
   updateItemQuantity(customerId: string, productId: string, quantity: number): Observable<void> {
     const headers = this.createHeaders();
     return this.http.put<void>(
-      `${this.apiUrl}/cart/${customerId}/update/${productId}?quantity=${quantity}`,
+      `${this.apiUrl}/${customerId}/update/${productId}?quantity=${quantity}`,
       null,
       { headers }
     );
@@ -62,19 +62,19 @@ export class CartService extends BaseApiService {
 
   clearCart(customerId: string): Observable<void> {
     const headers = this.createHeaders();
-    return this.http.delete<void>(`${this.apiUrl}/cart/${customerId}/clear`, { headers });
+    return this.http.delete<void>(`${this.apiUrl}/${customerId}/clear`, { headers });
   }
 
   isProductInCart(customerId: string, productId: string): Observable<boolean> {
     const headers = this.createHeaders();
     return this.http.get<boolean>(
-      `${this.apiUrl}/cart/${customerId}/contains/${productId}`,
+      `${this.apiUrl}/${customerId}/contains/${productId}`,
       { headers }
     );
   }
 
   getCartTotal(customerId: string): Observable<number> {
     const headers = this.createHeaders();
-    return this.http.get<number>(`${this.apiUrl}/cart/${customerId}/total`, { headers });
+    return this.http.get<number>(`${this.apiUrl}/${customerId}/total`, { headers });
   }
 }

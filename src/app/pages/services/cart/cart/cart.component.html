@@ -55,7 +55,7 @@
         *ngIf="currentStep === 1"
         [cartProducts]="cartProducts"
         (removeItemEvent)="removeItem($event)"
-        (updateQuantityEvent)="updateQuantity($event.productId, $event.quantity)"
+        (updateQuantityEvent)="updateQuantity($event)"
         (nextStepEvent)="nextStep()"
         class="animate-fadeIn">
       </app-cart-items>

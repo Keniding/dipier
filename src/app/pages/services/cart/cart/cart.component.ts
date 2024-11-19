@@ -7,65 +7,18 @@ import {NgClass, NgIf} from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { CartServiceServiceBusiness } from "../../../../services/business/cart-service-business.service";
 import { CartService } from "../../../../services/cart.service";
-import {Subscription, forkJoin, map} from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {Subscription, forkJoin, map, delay} from 'rxjs';
+import {catchError, finalize} from 'rxjs/operators';
 import {ProductService} from "../../../../services/product.service";
 import {MinioService} from "../../../../services/minio.service";
 
-interface CartProductItem extends Producto, CartItem {
-  updating?: boolean;
-  error?: string;
-  imageLoading?: boolean;
-  imageError?: boolean;
-  imageLoaded?: boolean
-}
-
-
-interface Producto {
-  id: string;
-  name: string;
-  description: string;
-  skuCode: string;
-  price: number;
-  categories: { id: string; name: string }[];
-
-  imageUrl?: string
-}
-
-interface CartItem {
-  id: string;
-  productId: string;
-  quantity: number;
-}
-
-interface Cart {
-  id: string;
-  customerId: string;
-  items: CartItem[];
-  status: 'ACTIVE' | 'ARCHIVED' | 'COMPLETED' | 'EXPIRED';
-  createdDate: Date;
-}
-
-
-interface MinioResponseMetadata {
-  nombre_original: string;
-  mime_type: string;
-  tamanio: string;
-  hash_md5: string;
-  fecha_subida: string;
-  object_id: string;
-}
-
-interface MinioResponseItem {
-  estado: string;
-  url: string;
-  nombreArchivo: string;
-  metadata: MinioResponseMetadata;
-  tamanio: number;
-  tipoContenido: string;
-  ultimaModificacion: string;
-  tiempoExpiracion: string;
-}
+import {
+  Cart,
+  CartItem,
+  CartProductItem,
+  MinioResponseItem,
+  Producto
+} from '../../../../models/cart.types';
 
 @Component({
   selector: 'app-cart',
@@ -192,19 +145,23 @@ export class CartComponent implements OnInit, OnDestroy {
         results.forEach((result) => {
           const productToUpdate = this.cartProducts.find(p => p.id === result.product.id);
           if (productToUpdate) {
-            const response = result.response as MinioResponseItem[];
-            if (!response || response.length === 0 || response[0].estado !== 'exitoso') {
+            if (result.response &&
+              Array.isArray(result.response) &&
+              result.response.length > 0 &&
+              result.response[0].estado === 'exitoso' &&
+              result.response[0].url) {
+              productToUpdate.imageUrl = result.response[0].url;
+              productToUpdate.imageError = false;
+              console.log('URL de imagen asignada para productId:', productToUpdate.productId, result.response[0].url);
+            } else {
               productToUpdate.imageUrl = this.defaultImageUrl;
               productToUpdate.imageError = true;
               console.log('Usando imagen por defecto para productId:', productToUpdate.productId);
-            } else {
-              productToUpdate.imageUrl = response[0].url;
-              console.log('URL de imagen asignada para productId:', productToUpdate.productId, response[0].url);
-              productToUpdate.imageError = false;
             }
             productToUpdate.imageLoading = false;
           }
         });
+
         this.cartProducts = [...this.cartProducts];
         console.log('CartProducts actualizados:', this.cartProducts);
       },
@@ -220,24 +177,87 @@ export class CartComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateQuantity(productId: string, quantity: number): void {
-    if (this.customerId) {
-      const productToUpdate = this.cartProducts.find(p => p.id === productId);
-      if (productToUpdate) {
-        productToUpdate.updating = true;
-        this.cartService.updateItemQuantity(this.customerId, productId, quantity).subscribe({
-          next: () => {
-            productToUpdate.quantity = quantity;
-            productToUpdate.updating = false;
-          },
-          error: (error) => {
-            console.error('Error updating quantity:', error);
-            productToUpdate.error = 'Error al actualizar la cantidad';
-            productToUpdate.updating = false;
-          }
-        });
-      }
+  updateQuantity(event: {productId: string, quantity: number}): void {
+    if (!this.customerId) {
+      console.error('No customer ID available');
+      return;
     }
+
+    const productToUpdate = this.cartProducts.find(p => p.productId === event.productId);
+    if (!productToUpdate) {
+      console.error('Product not found:', event.productId);
+      return;
+    }
+
+    console.log(`Intentando actualizar producto ${event.productId} a cantidad ${event.quantity}`);
+
+    productToUpdate.updating = true;
+    productToUpdate.error = undefined;
+
+    this.cartService.updateItemQuantity(this.customerId, event.productId, event.quantity)
+      .pipe(
+        delay(500),
+        finalize(() => {
+          productToUpdate.updating = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          console.log('Actualización enviada exitosamente');
+
+          productToUpdate.quantity = event.quantity;
+          productToUpdate.error = undefined;
+
+          this.verifyUpdate(this.customerId!, productToUpdate.id, event.productId, event.quantity);
+        },
+        error: (error) => {
+          console.error('Error updating quantity:', error);
+          productToUpdate.error = 'Error al actualizar la cantidad';
+        }
+      });
+  }
+
+  private verifyUpdate(customerId: string, itemId: string, productId: string, expectedQuantity: number): void {
+    this.cartService.getCartItems(customerId).subscribe({
+      next: (items) => {
+        const updatedItem = items.find(item =>
+          item.id === itemId && item.productId === productId
+        );
+
+        console.log('Verificación de actualización:', {
+          itemId,
+          productId,
+          expectedQuantity,
+          items,
+          foundItem: updatedItem
+        });
+
+        if (updatedItem) {
+          if (updatedItem.quantity !== expectedQuantity) {
+            console.warn('¡La cantidad en la base de datos no coincide con la cantidad esperada!', {
+              expected: expectedQuantity,
+              actual: updatedItem.quantity
+            });
+
+            const productInCart = this.cartProducts.find(p => p.id === itemId);
+            if (productInCart) {
+              productInCart.quantity = updatedItem.quantity;
+            }
+          } else {
+            console.log('Verificación exitosa: la cantidad coincide con lo esperado');
+          }
+        } else {
+          console.error('Verificación: No se encontró el item', {
+            itemId,
+            productId,
+            availableItems: items.map(i => ({id: i.id, productId: i.productId}))
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error al verificar la actualización:', error);
+      }
+    });
   }
 
   removeItem(itemId: string): void {
@@ -257,10 +277,6 @@ export class CartComponent implements OnInit, OnDestroy {
         });
       }
     }
-  }
-
-  get isCartEmpty(): boolean {
-    return this.cartProducts.length === 0;
   }
 
   private handleError(error: any): void {
@@ -296,45 +312,5 @@ export class CartComponent implements OnInit, OnDestroy {
     if (this.customerId) {
       this.loadCartData(this.customerId);
     }
-  }
-
-  get isLoading(): boolean {
-    return this.loading;
-  }
-
-  calculateTotal(): number {
-    return this.cartProducts.reduce((total, product) => {
-      return total + (product.price * product.quantity);
-    }, 0);
-  }
-
-  hasUpdatingItems(): boolean {
-    return this.cartProducts.some(product => product.updating);
-  }
-
-  onImageLoad(product: CartProductItem): void {
-    product.imageLoaded = true;
-    product.imageError = false;
-    product.imageLoading = false;
-  }
-
-  onImageError(product: CartProductItem): void {
-    product.imageError = true;
-    product.imageLoaded = false;
-    product.imageLoading = false;
-    product.imageUrl = this.defaultImageUrl;
-  }
-
-  handleQuantityChange(product: CartProductItem, newQuantity: number): void {
-    if (newQuantity < 1 || product.updating) return;
-    this.updateQuantity(product.id, newQuantity);
-  }
-
-  onNextStep(): void {
-    this.nextStep();
-  }
-
-  onRemoveItem(productId: string): void {
-    this.removeItem(productId);
   }
 }
