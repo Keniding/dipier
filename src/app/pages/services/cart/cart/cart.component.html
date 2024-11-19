@@ -69,9 +69,13 @@
 
       <app-payment-method
         *ngIf="currentStep === 2"
+        [customerId]="customerId"
+        [paymentMethods]="paymentMethods"
+        [selectedPaymentMethod]="selectedPaymentMethod"
+        [error]="paymentError"
         (prevStepEvent)="prevStep()"
-        (confirmPaymentEvent)="confirmPayment()"
-        class="animate-fadeIn">
+        (paymentMethodChange)="onPaymentMethodChange($event)"
+        (confirmPaymentEvent)="onConfirmPurchase()">
       </app-payment-method>
 
       <app-confirmation

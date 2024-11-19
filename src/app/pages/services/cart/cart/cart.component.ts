@@ -20,6 +20,7 @@ import {
   MinioResponseItem,
   Producto
 } from '../../../../models/cart.types';
+import {PaymentMethod, PaymentMethodService} from "../../../../services/payment.service";
 
 @Component({
   selector: 'app-cart',
@@ -48,13 +49,18 @@ export class CartComponent implements OnInit, OnDestroy {
   cartProducts: CartProductItem[] = [];
   private readonly defaultImageUrl = 'https://via.placeholder.com/50';
 
+  paymentMethods: PaymentMethod[] = [];
+  selectedPaymentMethod: PaymentMethod | null = null;
+  paymentError: string | null = null;
+
   isSearchModalOpen = false;
 
   constructor(
     private cartServiceBusiness: CartServiceServiceBusiness,
     private cartService: CartService,
     private productService: ProductService,
-    private minioService: MinioService
+    private minioService: MinioService,
+    private paymentMethodService: PaymentMethodService
   ) {
   }
 
@@ -311,6 +317,10 @@ export class CartComponent implements OnInit, OnDestroy {
   nextStep(): void {
     if (this.currentStep < 3) {
       this.currentStep++;
+
+      if (this.currentStep === 2) {
+        this.loadPaymentMethods();
+      }
     }
   }
 
@@ -320,7 +330,8 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmPayment(): void {
+  confirmPayment(paymentMethod: PaymentMethod): void {
+    console.log('Método de pago seleccionado:', paymentMethod);
     this.nextStep();
   }
 
@@ -377,6 +388,38 @@ export class CartComponent implements OnInit, OnDestroy {
           console.error('Error al agregar producto al carrito:', error);
         }
       });
+    }
+  }
+
+  loadPaymentMethods() {
+    if (this.customerId) {
+      this.paymentMethodService.getPaymentMethods(this.customerId).subscribe({
+        next: (methods: PaymentMethod[]) => {
+          this.paymentMethods = methods;
+          console.log('Métodos de pago cargados:', this.paymentMethods);
+        },
+        error: (error: any) => {
+          console.error('Error al obtener los métodos de pago:', error);
+          this.paymentError = 'Error al cargar los métodos de pago';
+        }
+      });
+    }
+  }
+
+  onPaymentMethodChange(method: PaymentMethod) {
+    this.selectedPaymentMethod = method;
+    console.log('Método de pago seleccionado:', method);
+  }
+
+  onConfirmPurchase() {
+    if (!this.selectedPaymentMethod) {
+      this.paymentError = 'Por favor seleccione un método de pago';
+      return;
+    }
+
+    if (!this.customerId || !this.cart) {
+      this.paymentError = 'Error: Información de carrito no disponible';
+      return;
     }
   }
 }
