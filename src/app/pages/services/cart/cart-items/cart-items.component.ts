@@ -90,6 +90,10 @@ export class CartItemsComponent implements OnInit, OnDestroy {
       productId: product.productId,
       quantity: newQuantity
     });
+
+    setTimeout(() => {
+      this.totalChanged.emit(this.calculateTotal());
+    });
   }
 
   onRemoveItem(productId: string): void {
@@ -106,10 +110,14 @@ export class CartItemsComponent implements OnInit, OnDestroy {
     }
   }
 
+  @Output() totalChanged = new EventEmitter<number>();
+
   calculateTotal(): number {
-    return this.cartProducts.reduce((total, product) => {
-      return total + (product.price * product.quantity);
+    const total = this.cartProducts.reduce((sum, product) => {
+      return sum + (product.price * product.quantity);
     }, 0);
+    this.totalChanged.emit(total);
+    return total;
   }
 
   hasUpdatingItems(): boolean {
@@ -138,6 +146,8 @@ export class CartItemsComponent implements OnInit, OnDestroy {
       this.removeItemEvent.emit(this.productToDelete.id);
       this.showDeleteDialog = false;
       this.productToDelete = null;
+      const total = this.calculateTotal();
+      console.log('Total calculado para el pago:', total);
     }
   }
 }

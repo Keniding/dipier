@@ -73,14 +73,18 @@
         [paymentMethods]="paymentMethods"
         [selectedPaymentMethod]="selectedPaymentMethod"
         [error]="paymentError"
+        [totalAmount]="calculateTotal()"
         (prevStepEvent)="prevStep()"
         (paymentMethodChange)="onPaymentMethodChange($event)"
+        (paymentProcessed)="onPaymentProcessed($event)">
         (confirmPaymentEvent)="onConfirmPurchase()">
       </app-payment-method>
 
       <app-confirmation
         *ngIf="currentStep === 3"
         (prevStepEvent)="prevStep()"
+        [invoiceId]="lastInvoiceId"
+        [totalAmount]="lastPaymentTotal"
         class="animate-fadeIn">
       </app-confirmation>
     </div>

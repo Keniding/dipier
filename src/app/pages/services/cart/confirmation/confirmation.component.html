@@ -1,6 +1,17 @@
+<!-- confirmation.component.html -->
 <div class="confirmation">
   <h2 class="text-2xl font-bold text-center text-green-600 mb-4">¡Gracias por tu compra!</h2>
   <p class="text-gray-800">Tu pedido ha sido confirmado. Recibirás un correo con los detalles.</p>
+
+  <div class="mt-4 space-y-2">
+    <p class="text-gray-600" *ngIf="invoiceId">
+      <span class="font-semibold">Número de orden:</span> {{ invoiceId }}
+    </p>
+    <p class="text-gray-600">
+      <span class="font-semibold">Total pagado:</span> {{ totalAmount | currency:'USD':'symbol':'1.2-2' }}
+    </p>
+  </div>
+
   <button (click)="onPrevStep()" class="mt-6 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">
     Atrás
   </button>

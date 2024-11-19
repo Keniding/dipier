@@ -9,6 +9,7 @@ import {
   CashPaymentDetails
 } from '../../../../services/payment.service';
 import { CommonModule } from '@angular/common';
+import {BillingService} from "../../../../services/invoice.service";
 
 @Component({
   selector: 'app-payment-method',
@@ -22,17 +23,68 @@ export class PaymentMethodComponent implements OnInit {
   @Input() paymentMethods: PaymentMethod[] = [];
   @Input() selectedPaymentMethod: PaymentMethod | null = null;
   @Input() error: string | null = null;
+  @Input() totalAmount: number = 0;
 
   @Output() prevStepEvent = new EventEmitter<void>();
   @Output() paymentMethodChange = new EventEmitter<PaymentMethod>();
   @Output() confirmPaymentEvent = new EventEmitter<void>();
+  @Output() paymentProcessed = new EventEmitter<string>();
 
   loading: boolean = false;
+  processingPayment: boolean = false;
 
-  constructor(private paymentMethodService: PaymentMethodService) {}
+  constructor(
+    private paymentMethodService: PaymentMethodService,
+    private billingService: BillingService
+  ) {}
 
   ngOnInit() {
     this.loadPaymentMethods();
+  }
+
+  async onConfirm() {
+    if (!this.selectedPaymentMethod || !this.customerId) {
+      this.error = 'Por favor, seleccione un método de pago';
+      return;
+    }
+
+    this.processingPayment = true;
+    this.error = null;
+
+    try {
+      const invoice = {
+        id: '',
+        customerId: this.customerId,
+        totalAmount: this.totalAmount,
+        status: 'PENDING',
+        paymentDate: new Date().toISOString()
+      };
+
+      const createdInvoice = await this.billingService.createInvoice(invoice).toPromise();
+
+      if (!createdInvoice) {
+        throw new Error('Error al crear la factura');
+      }
+
+      await this.billingService.processInvoice(this.customerId).toPromise();
+
+      const updatedInvoice = {
+        ...createdInvoice,
+        status: 'COMPLETED',
+        paymentDate: new Date().toISOString()
+      };
+
+      await this.billingService.updateInvoice(updatedInvoice).toPromise();
+
+      this.paymentProcessed.emit(createdInvoice.id);
+      this.confirmPaymentEvent.emit();
+
+    } catch (error) {
+      console.error('Error en el proceso de pago:', error);
+      this.error = 'Error al procesar el pago. Por favor, intente nuevamente.';
+    } finally {
+      this.processingPayment = false;
+    }
   }
 
   loadPaymentMethods() {
@@ -55,12 +107,6 @@ export class PaymentMethodComponent implements OnInit {
   onSelectPaymentMethod(method: PaymentMethod) {
     this.selectedPaymentMethod = method;
     this.paymentMethodChange.emit(method);
-  }
-
-  onConfirm() {
-    if (this.selectedPaymentMethod) {
-      this.confirmPaymentEvent.emit();
-    }
   }
 
   onPrevStep() {

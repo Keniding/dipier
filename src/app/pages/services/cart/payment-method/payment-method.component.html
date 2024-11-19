@@ -1,9 +1,16 @@
 <div class="space-y-6">
   <h2 class="text-2xl font-bold text-gray-800 mb-4">Seleccione método de pago</h2>
 
-  <!-- Loading state -->
-  <div *ngIf="loading" class="flex justify-center py-4">
+  <!-- Total amount display -->
+  <div class="bg-gray-50 p-4 rounded-lg mb-4">
+    <div class="text-lg font-semibold">Total a pagar:</div>
+    <div class="text-2xl text-green-600">{{ totalAmount | currency:'USD':'symbol':'1.2-2' }}</div>
+  </div>
+
+  <!-- Loading states -->
+  <div *ngIf="loading || processingPayment" class="flex justify-center py-4">
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+    <span *ngIf="processingPayment" class="ml-2">Procesando pago...</span>
   </div>
 
   <!-- Error message -->
@@ -12,15 +19,14 @@
   </div>
 
   <!-- Payment methods list -->
-  <div *ngIf="!loading && paymentMethods.length > 0" class="space-y-4">
+  <div *ngIf="!loading && !processingPayment && paymentMethods.length > 0" class="space-y-4">
     <div *ngFor="let method of paymentMethods"
          (click)="onSelectPaymentMethod(method)"
-    class="p-4 border rounded-lg cursor-pointer transition-all duration-200"
-    [class.border-green-500]="selectedPaymentMethod?.id === method.id"
-    [class.bg-green-50]="selectedPaymentMethod?.id === method.id">
+         class="p-4 border rounded-lg cursor-pointer transition-all duration-200"
+         [class.border-green-500]="selectedPaymentMethod?.id === method.id"
+         [class.bg-green-50]="selectedPaymentMethod?.id === method.id">
 
-
-    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-3">
         <!-- Icon based on payment type -->
         <div class="text-xl" [ngSwitch]="method.methodType">
           <i *ngSwitchCase="'TARJETA_CREDITO'" class="fas fa-credit-card text-blue-600"></i>
@@ -58,7 +64,7 @@
   </div>
 
   <!-- No payment methods message -->
-  <div *ngIf="!loading && paymentMethods.length === 0"
+  <div *ngIf="!loading && !processingPayment && paymentMethods.length === 0"
        class="text-center py-4 text-gray-600">
     No hay métodos de pago disponibles
   </div>
@@ -66,17 +72,20 @@
   <!-- Action buttons -->
   <div class="flex justify-between mt-6">
     <button (click)="onPrevStep()"
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            [disabled]="processingPayment"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            [class.opacity-50]="processingPayment"
+            [class.cursor-not-allowed]="processingPayment">
       <i class="fas fa-arrow-left mr-2"></i>
       Anterior
     </button>
 
     <button (click)="onConfirm()"
-            [disabled]="!selectedPaymentMethod"
-            [class.opacity-50]="!selectedPaymentMethod"
-            [class.cursor-not-allowed]="!selectedPaymentMethod"
+            [disabled]="!selectedPaymentMethod || processingPayment"
+            [class.opacity-50]="!selectedPaymentMethod || processingPayment"
+            [class.cursor-not-allowed]="!selectedPaymentMethod || processingPayment"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-      Confirmar Pago
+      {{ processingPayment ? 'Procesando...' : 'Confirmar Pago' }}
       <i class="fas fa-arrow-right ml-2"></i>
     </button>
   </div>

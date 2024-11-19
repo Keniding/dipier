@@ -53,6 +53,9 @@ export class CartComponent implements OnInit, OnDestroy {
   selectedPaymentMethod: PaymentMethod | null = null;
   paymentError: string | null = null;
 
+  lastInvoiceId: string | null = null;
+  lastPaymentTotal: number = 0;
+
   isSearchModalOpen = false;
 
   constructor(
@@ -320,6 +323,8 @@ export class CartComponent implements OnInit, OnDestroy {
 
       if (this.currentStep === 2) {
         this.loadPaymentMethods();
+        const total = this.calculateTotal();
+        console.log('Total calculado para el pago:', total);
       }
     }
   }
@@ -421,5 +426,17 @@ export class CartComponent implements OnInit, OnDestroy {
       this.paymentError = 'Error: Información de carrito no disponible';
       return;
     }
+  }
+
+  calculateTotal(): number {
+    return this.cartProducts.reduce((total, product) => {
+      return total + (product.price * product.quantity);
+    }, 0);
+  }
+
+  onPaymentProcessed(invoiceId: string) {
+    this.lastInvoiceId = invoiceId;
+    this.lastPaymentTotal = this.calculateTotal();
+    this.currentStep = 3;
   }
 }
