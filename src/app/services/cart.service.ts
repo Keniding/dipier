@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import { environment } from '../../environments/environment';
 import { BaseApiService } from "./common/base-api-service.service";
 import {CreateCartItem} from "../models/cart.types";
@@ -45,11 +45,22 @@ export class CartService extends BaseApiService {
   }
 
   removeItemFromCart(customerId: string, productId: string): Observable<void> {
+    console.log(`Attempting to remove item with productId ${productId} for customer ${customerId}`);
     const headers = this.createHeaders();
+    const cartItem = {
+      productId: productId
+    };
+    console.log('Sending request with body:', cartItem);
+
     return this.http.delete<void>(`${this.apiUrl}/${customerId}/remove`, {
       headers,
-      body: productId
-    });
+      body: cartItem
+    }).pipe(
+      tap({
+        next: () => console.log('Delete request successful'),
+        error: (error) => console.error('Delete request failed:', error)
+      })
+    );
   }
 
   updateItemQuantity(customerId: string, productId: string, quantity: number): Observable<void> {

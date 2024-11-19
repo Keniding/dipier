@@ -3,6 +3,7 @@ import { CartProductItem } from '../../../../models/cart.types';
 
 import {Component, Input, Output, EventEmitter, OnInit, OnDestroy} from '@angular/core';
 import {NgForOf, NgIf, CurrencyPipe, NgOptimizedImage, NgClass} from "@angular/common";
+import {ConfirmationDialogComponent} from "./confirmation-dialog.component";
 
 @Component({
   selector: 'app-cart-items',
@@ -12,7 +13,9 @@ import {NgForOf, NgIf, CurrencyPipe, NgOptimizedImage, NgClass} from "@angular/c
     NgIf,
     NgClass,
     CurrencyPipe,
-    NgOptimizedImage
+    NgOptimizedImage,
+
+    ConfirmationDialogComponent
   ],
   templateUrl: './cart-items.component.html',
   styleUrl: './cart-items.component.css'
@@ -22,6 +25,10 @@ export class CartItemsComponent implements OnInit, OnDestroy {
   @Output() removeItemEvent = new EventEmitter<string>();
   @Output() updateQuantityEvent = new EventEmitter<{productId: string, quantity: number}>();
   @Output() nextStepEvent = new EventEmitter<void>();
+  @Output() clearCartEvent = new EventEmitter<void>();
+
+  showDeleteDialog = false;
+  productToDelete: CartProductItem | null = null;
 
   protected readonly defaultImageUrl = 'https://via.placeholder.com/50';
   isLoading = true;
@@ -107,5 +114,30 @@ export class CartItemsComponent implements OnInit, OnDestroy {
 
   hasUpdatingItems(): boolean {
     return this.cartProducts.some(product => product.updating);
+  }
+
+  openDeleteDialog(product: CartProductItem): void {
+    console.log('Opening delete dialog for product:', product);
+    if (!product.updating) {
+      this.productToDelete = product;
+      this.showDeleteDialog = true;
+      console.log('Dialog state:', { showDeleteDialog: this.showDeleteDialog, productToDelete: this.productToDelete });
+    }
+  }
+
+  onCancelDelete(): void {
+    console.log('Canceling delete');
+    this.showDeleteDialog = false;
+    this.productToDelete = null;
+  }
+
+  onConfirmDelete(): void {
+    console.log('Confirming delete');
+    if (this.productToDelete) {
+      console.log('Removing item with ID:', this.productToDelete.id);
+      this.removeItemEvent.emit(this.productToDelete.id);
+      this.showDeleteDialog = false;
+      this.productToDelete = null;
+    }
   }
 }

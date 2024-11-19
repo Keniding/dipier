@@ -270,18 +270,29 @@ export class CartComponent implements OnInit, OnDestroy {
     if (this.customerId) {
       const productToRemove = this.cartProducts.find(p => p.id === itemId);
       if (productToRemove) {
+        console.log('Attempting to remove item:', itemId);
         productToRemove.updating = true;
-        this.cartService.removeItemFromCart(this.customerId, itemId).subscribe({
-          next: () => {
-            this.cartProducts = this.cartProducts.filter(product => product.id !== itemId);
-          },
-          error: (error) => {
-            console.error('Error removing item:', error);
-            productToRemove.error = 'Error al eliminar el producto';
-            productToRemove.updating = false;
-          }
-        });
+
+        this.cartService.removeItemFromCart(this.customerId, productToRemove.productId)
+          .subscribe({
+            next: () => {
+              console.log('Item removed successfully');
+              this.cartProducts = this.cartProducts.filter(product => product.id !== itemId);
+            },
+            error: (error) => {
+              console.error('Error removing item:', error);
+              productToRemove.updating = false;
+              productToRemove.error = 'Error al eliminar el producto';
+            },
+            complete: () => {
+              console.log('Remove operation completed');
+            }
+          });
+      } else {
+        console.error('Product not found:', itemId);
       }
+    } else {
+      console.error('No customer ID available');
     }
   }
 

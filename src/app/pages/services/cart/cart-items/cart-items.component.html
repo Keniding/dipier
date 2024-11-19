@@ -53,22 +53,23 @@
         </button>
 
         <span class="w-8 text-center">{{product.quantity}}</span>
-
         <button
           (click)="handleQuantityChange(product, product.quantity + 1)"
           [disabled]="product.updating"
           class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 flex items-center justify-center">
           +
         </button>
+
+        <button
+          (click)="openDeleteDialog(product)"
+          [disabled]="product.updating"
+          class="p-2 bg-red-600 text-white hover:bg-red-700 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fas fa-trash"></i>
+        </button>
+
       </div>
 
-      <!-- Remove Button -->
-      <button
-        (click)="onRemoveItem(product.id)"
-        class="ml-4 text-red-500 hover:text-red-700"
-        [disabled]="product.updating">
-        <i class="fas fa-trash"></i>
-      </button>
+
     </div>
 
     <!-- Error Messages -->
@@ -97,3 +98,10 @@
     </div>
   </div>
 </div>
+<app-confirmation-dialog
+  [isOpen]="showDeleteDialog"
+  title="Eliminar Producto"
+  [message]="'¿Estás seguro de que deseas eliminar ' + (productToDelete?.name || 'este producto') + ' del carrito?'"
+  (confirm)="onConfirmDelete()"
+  (cancel)="onCancelDelete()">
+</app-confirmation-dialog>
