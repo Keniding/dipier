@@ -1,0 +1,92 @@
+<div class="space-y-6">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">Seleccione método de pago</h2>
+
+  <!-- Total amount display -->
+  <div class="bg-gray-50 p-4 rounded-lg mb-4">
+    <div class="text-lg font-semibold">Total a pagar:</div>
+    <div class="text-2xl text-green-600">{{ totalAmount | currency:'USD':'symbol':'1.2-2' }}</div>
+  </div>
+
+  <!-- Loading states -->
+  <div *ngIf="loading || processingPayment" class="flex justify-center py-4">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+    <span *ngIf="processingPayment" class="ml-2">Procesando pago...</span>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <span class="block sm:inline">{{ error }}</span>
+  </div>
+
+  <!-- Payment methods list -->
+  <div *ngIf="!loading && !processingPayment && paymentMethods.length > 0" class="space-y-4">
+    <div *ngFor="let method of paymentMethods"
+         (click)="onSelectPaymentMethod(method)"
+         class="p-4 border rounded-lg cursor-pointer transition-all duration-200"
+         [class.border-green-500]="selectedPaymentMethod?.id === method.id"
+         [class.bg-green-50]="selectedPaymentMethod?.id === method.id">
+
+      <div class="flex items-center space-x-3">
+        <!-- Icon based on payment type -->
+        <div class="text-xl" [ngSwitch]="method.methodType">
+          <i *ngSwitchCase="'TARJETA_CREDITO'" class="fas fa-credit-card text-blue-600"></i>
+          <i *ngSwitchCase="'TARJETA_DEBITO'" class="fas fa-credit-card text-green-600"></i>
+          <i *ngSwitchCase="'BILLETERA_DIGITAL'" class="fas fa-wallet text-purple-600"></i>
+          <i *ngSwitchCase="'EFECTIVO'" class="fas fa-money-bill text-green-600"></i>
+          <i *ngSwitchCase="'BANCA'" class="fas fa-university text-blue-800"></i>
+        </div>
+
+        <!-- Payment method details -->
+        <div class="flex-1">
+          <div class="font-semibold" [ngSwitch]="method.methodType">
+            <span *ngSwitchCase="'TARJETA_CREDITO'">Tarjeta de Crédito</span>
+            <span *ngSwitchCase="'TARJETA_DEBITO'">Tarjeta de Débito</span>
+            <span *ngSwitchCase="'BILLETERA_DIGITAL'">Billetera Digital</span>
+            <span *ngSwitchCase="'EFECTIVO'">Efectivo</span>
+            <span *ngSwitchCase="'BANCA'">Transferencia Bancaria</span>
+          </div>
+
+          <div class="text-sm text-gray-600" *ngIf="getFirstDetail(method) as detail" [ngSwitch]="detail.type">
+            <span *ngSwitchCase="'CARD'">**** **** **** {{ getCardNumber(detail)?.slice(-4) }}</span>
+            <span *ngSwitchCase="'WALLET'">{{ getPhoneNumber(detail) }}</span>
+            <span *ngSwitchCase="'BANK_ACCOUNT'">{{ getBankName(detail) }}</span>
+            <span *ngSwitchCase="'CASH'">{{ getCurrency(detail) }}</span>
+          </div>
+        </div>
+
+        <!-- Selected indicator -->
+        <div *ngIf="selectedPaymentMethod?.id === method.id"
+             class="text-green-500">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No payment methods message -->
+  <div *ngIf="!loading && !processingPayment && paymentMethods.length === 0"
+       class="text-center py-4 text-gray-600">
+    No hay métodos de pago disponibles
+  </div>
+
+  <!-- Action buttons -->
+  <div class="flex justify-between mt-6">
+    <button (click)="onPrevStep()"
+            [disabled]="processingPayment"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            [class.opacity-50]="processingPayment"
+            [class.cursor-not-allowed]="processingPayment">
+      <i class="fas fa-arrow-left mr-2"></i>
+      Anterior
+    </button>
+
+    <button (click)="onConfirm()"
+            [disabled]="!selectedPaymentMethod || processingPayment"
+            [class.opacity-50]="!selectedPaymentMethod || processingPayment"
+            [class.cursor-not-allowed]="!selectedPaymentMethod || processingPayment"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+      {{ processingPayment ? 'Procesando...' : 'Confirmar Pago' }}
+      <i class="fas fa-arrow-right ml-2"></i>
+    </button>
+  </div>
+</div>

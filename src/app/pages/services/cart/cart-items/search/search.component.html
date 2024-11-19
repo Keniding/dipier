@@ -1,77 +1,102 @@
-<!-- search.component.html -->
-<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg w-full max-w-2xl p-6 max-h-[80vh] overflow-y-auto">
+<div class="fixed inset-0 bg-indigo-900/30 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl w-full max-w-2xl p-6 max-h-[80vh] overflow-y-auto shadow-xl">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Buscar Productos</h2>
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Buscar Productos
+      </h2>
       <button
         (click)="onClose()"
-        class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
+        class="p-2 hover:bg-blue-50 rounded-full transition-colors duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
     </div>
 
     <!-- Search Bar -->
-    <div class="mb-4">
+    <div class="mb-6">
       <div class="relative">
         <input
           type="text"
           [(ngModel)]="searchTerm"
           (input)="onSearch()"
           placeholder="Buscar por nombre o SKU..."
-          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-5 py-3 bg-blue-50 border-2 border-blue-100 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-200 pl-12"
         >
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-5 w-5 text-blue-400 absolute left-4 top-1/2 transform -translate-y-1/2"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
         <button
           *ngIf="searchTerm"
           (click)="clearSearch()"
-          class="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-          <i class="fas fa-times-circle"></i>
+          class="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-blue-100 rounded-full transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
-        <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex justify-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+    <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-blue-600 font-medium">Buscando productos...</p>
+    </div>
+
+    <!-- No Results State -->
+    <div *ngIf="!isLoading && searchResults.length === 0 && searchTerm"
+         class="flex flex-col items-center justify-center py-12 bg-blue-50 rounded-xl">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="text-blue-700 font-medium">No se encontraron productos</p>
     </div>
 
     <!-- Results -->
     <div class="space-y-4">
-      <div *ngIf="!isLoading && searchResults.length === 0 && searchTerm"
-           class="text-center py-4 text-gray-500">
-        No se encontraron productos
-      </div>
-
       <div *ngFor="let product of searchResults"
-           class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-        <!-- Product Image -->
-        <div class="relative w-16 h-16 flex-shrink-0">
-          <div *ngIf="product.imageLoading"
-               class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-md">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+           class="group p-4 border border-blue-100 rounded-xl hover:border-blue-300 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-white to-blue-50/50">
+        <div class="flex items-center gap-4">
+          <!-- Product Image -->
+          <div class="relative w-20 h-20 flex-shrink-0">
+            <div *ngIf="product.imageLoading"
+                 class="absolute inset-0 flex items-center justify-center bg-blue-50 rounded-lg">
+              <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+            <img [src]="product.imageUrl"
+                 [alt]="product.name"
+                 class="w-20 h-20 object-cover rounded-lg shadow-sm"
+                 [class.opacity-0]="product.imageLoading"
+                 (load)="product.imageLoading = false"
+                 (error)="product.imageUrl = defaultImageUrl; product.imageLoading = false">
           </div>
-          <img [src]="product.imageUrl"
-               [alt]="product.name"
-               class="w-16 h-16 object-cover rounded-md"
-               [class.opacity-0]="product.imageLoading"
-               (load)="product.imageLoading = false"
-               (error)="product.imageUrl = defaultImageUrl; product.imageLoading = false">
-        </div>
 
-        <!-- Product Details -->
-        <div class="flex-grow ml-4">
-          <h3 class="font-semibold text-gray-800">{{product.name}}</h3>
-          <p class="text-sm text-gray-600">SKU: {{product.skuCode}}</p>
-          <p class="text-green-600 font-medium">{{product.price | currency:'USD'}}</p>
-        </div>
+          <!-- Product Details -->
+          <div class="flex-grow">
+            <h3 class="font-semibold text-lg text-indigo-900">{{product.name}}</h3>
+            <p class="text-sm text-blue-600 font-medium">SKU: {{product.skuCode}}</p>
+            <p class="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              {{product.price | currency:'USD'}}
+            </p>
+          </div>
 
-        <!-- Add Button -->
-        <button
-          (click)="onAddProduct(product)"
-          class="ml-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          Agregar
-        </button>
+          <!-- Add Button -->
+          <button
+            (click)="onAddProduct(product)"
+            class="flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-white transition-all duration-300 transform group-hover:scale-105"
+            style="background: linear-gradient(to right, #4f46e5, #3b82f6)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Agregar
+          </button>
+        </div>
       </div>
     </div>
   </div>

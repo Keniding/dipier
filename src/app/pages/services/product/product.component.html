@@ -1,33 +1,40 @@
-<div class="min-h-screen mat-app-background">
-  <mat-toolbar class="flex flex-wrap items-center" color="primary">
-    <span class="text-lg md:text-xl font-bold">Sistema de Gestión de Inventario</span>
+<div class="min-h-screen mat-app-background bg-gradient-to-br from-gray-50 to-gray-100">
+  <!-- Mantenemos el mat-toolbar pero con mejores estilos -->
+  <mat-toolbar class="flex flex-wrap items-center shadow-md bg-gradient-to-r from-blue-600 to-blue-800" color="primary">
+    <div class="flex items-center space-x-3">
+      <mat-icon class="transform scale-125">inventory_2</mat-icon>
+      <span class="text-lg md:text-xl font-bold">Sistema de Gestión de Inventario</span>
+    </div>
     <span class="flex-grow"></span>
-    <button mat-raised-button color="accent" class="mr-4 mb-2 md:mb-0" (click)="agregarProducto()">
+    <button mat-raised-button color="accent"
+            class="mr-4 mb-2 md:mb-0 shadow-lg transform hover:scale-105 transition-all duration-200"
+            (click)="agregarProducto()">
       <mat-icon class="mr-2">add</mat-icon>
       <span class="hidden sm:inline">Agregar Producto</span>
     </button>
   </mat-toolbar>
 
   <div class="container mx-auto mt-8 p-4">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title class="text-lg md:text-2xl font-bold mb-4">Lista de Productos</mat-card-title>
+    <mat-card class="shadow-xl rounded-xl overflow-hidden border border-gray-100">
+      <mat-card-header class="bg-gray-50 p-6 border-b border-gray-100">
+        <mat-card-title class="text-lg md:text-2xl font-bold text-gray-800">Lista de Productos</mat-card-title>
       </mat-card-header>
-      <mat-card-content>
-        <div class="overflow-x-auto">
+
+      <mat-card-content class="p-6">
+        <div class="overflow-x-auto rounded-lg">
           <table mat-table [dataSource]="dataSource" class="w-full">
             <!-- Imagen Column -->
             <ng-container matColumnDef="imagen">
-              <th mat-header-cell *matHeaderCellDef> Imagen </th>
+              <th mat-header-cell *matHeaderCellDef class="bg-gray-50 text-gray-700 font-semibold"> Imagen </th>
               <td mat-cell *matCellDef="let element">
-                <div class="relative w-16 h-16">
+                <div class="relative w-16 h-16 group">
                   <img
                     [src]="element.imageUrl || 'https://via.placeholder.com/50'"
                     [alt]="element.name"
-                    class="w-full h-full object-cover rounded"
+                    class="w-full h-full object-cover rounded-lg shadow-sm transition-all duration-200 group-hover:shadow-md"
                     (error)="onImageError($event)"
                   >
-                  <button mat-icon-button class="absolute top-0 right-0" (click)="uploadImage(element)">
+                  <button mat-icon-button class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200" (click)="uploadImage(element)">
                     <mat-icon>edit</mat-icon>
                   </button>
                 </div>
@@ -35,34 +42,40 @@
             </ng-container>
 
             <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef> ID </th>
-              <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+              <th mat-header-cell *matHeaderCellDef class="bg-gray-50 text-gray-700 font-semibold"> ID </th>
+              <td mat-cell *matCellDef="let element" class="text-gray-600"> {{element.id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef> Nombre </th>
-              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+              <th mat-header-cell *matHeaderCellDef class="bg-gray-50 text-gray-700 font-semibold"> Nombre </th>
+              <td mat-cell *matCellDef="let element" class="font-medium"> {{element.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="price">
-              <th mat-header-cell *matHeaderCellDef> Precio </th>
-              <td mat-cell *matCellDef="let element"> {{element.price | currency}} </td>
+              <th mat-header-cell *matHeaderCellDef class="bg-gray-50 text-gray-700 font-semibold"> Precio </th>
+              <td mat-cell *matCellDef="let element" class="text-gray-800"> {{element.price | currency}} </td>
             </ng-container>
 
             <ng-container matColumnDef="acciones">
-              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <th mat-header-cell *matHeaderCellDef class="bg-gray-50 text-gray-700 font-semibold"> Acciones </th>
               <td mat-cell *matCellDef="let element">
-                <button mat-icon-button color="primary" (click)="editarProducto(element)" class="mr-2">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="eliminarProducto(element)">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <div class="flex space-x-2">
+                  <button mat-icon-button color="primary" (click)="editarProducto(element)"
+                          class="hover:bg-blue-50 transition-colors duration-200">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="eliminarProducto(element)"
+                          class="hover:bg-red-50 transition-colors duration-200">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"
+                class="border-b border-gray-200"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                class="hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100"></tr>
           </table>
         </div>
       </mat-card-content>

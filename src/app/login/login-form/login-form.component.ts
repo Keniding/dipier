@@ -12,8 +12,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: 'login-form.component.html',
-  styles: [`
-  `]
+  styleUrls: ['login-form.component.css']
 })
 export class LoginFormComponent {
   loginForm: FormGroup;
@@ -32,7 +31,7 @@ export class LoginFormComponent {
         console.log('Login successful', response);
         localStorage.setItem('authToken', response.token);
 
-        this.router.navigate(['/home']).then(success => {
+        this.router.navigate(['/cart']).then(success => {
           if (success) {
             console.log('Navigation to home was successful!');
           } else {

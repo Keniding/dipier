@@ -16,7 +16,7 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
       <!-- Campo Usuario -->
-      <mat-form-field appearance="fill" class="w-full">
+      <mat-form-field class="w-full">
         <mat-label>
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

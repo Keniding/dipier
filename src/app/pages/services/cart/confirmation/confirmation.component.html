@@ -1,18 +1,73 @@
-<!-- confirmation.component.html -->
-<div class="confirmation">
-  <h2 class="text-2xl font-bold text-center text-green-600 mb-4">¡Gracias por tu compra!</h2>
-  <p class="text-gray-800">Tu pedido ha sido confirmado. Recibirás un correo con los detalles.</p>
+<div class="max-w-2xl mx-auto p-8 rounded-2xl shadow-lg"
+     style="background: linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%);">
 
-  <div class="mt-4 space-y-2">
-    <p class="text-gray-600" *ngIf="invoiceId">
-      <span class="font-semibold">Número de orden:</span> {{ invoiceId }}
-    </p>
-    <p class="text-gray-600">
-      <span class="font-semibold">Total pagado:</span> {{ totalAmount | currency:'USD':'symbol':'1.2-2' }}
-    </p>
+  <!-- Success Icon -->
+  <div class="flex justify-center mb-6">
+    <div class="rounded-full bg-blue-100 p-4 animate-bounce">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
   </div>
 
-  <button (click)="onPrevStep()" class="mt-6 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition">
-    Atrás
-  </button>
+  <!-- Title with gradient -->
+  <h2 class="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+    ¡Gracias por tu compra!
+  </h2>
+
+  <!-- Confirmation message -->
+  <p class="text-center text-indigo-700 text-lg mb-8">
+    Tu pedido ha sido confirmado. Recibirás un correo con los detalles.
+  </p>
+
+  <!-- Order details card -->
+  <div class="bg-white p-6 rounded-xl border border-blue-100 shadow-sm space-y-4 mb-8">
+    <!-- Order number -->
+    <div *ngIf="invoiceId" class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <div>
+        <span class="text-sm text-indigo-600 font-medium">Número de orden</span>
+        <p class="text-lg font-semibold text-indigo-900">{{ invoiceId }}</p>
+      </div>
+    </div>
+
+    <!-- Total amount -->
+    <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <span class="text-sm text-indigo-600 font-medium">Total pagado</span>
+        <p class="text-lg font-semibold text-indigo-900">
+          {{ totalAmount | currency:'USD':'symbol':'1.2-2' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="flex justify-center gap-4">
+    <button (click)="onPrevStep()"
+            class="group px-6 py-3 rounded-xl font-medium flex items-center gap-2 bg-white border border-blue-200 text-indigo-600 hover:bg-blue-50 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-5 w-5 transform group-hover:-translate-x-1 transition-transform duration-300"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver al inicio
+    </button>
+
+    <!-- Optional: Download invoice button -->
+    <button class="px-6 py-3 rounded-xl font-medium flex items-center gap-2 text-white transition-all duration-300 transform hover:scale-[1.02]"
+            style="background: linear-gradient(to right, #4f46e5, #3b82f6);">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      Descargar factura
+    </button>
+  </div>
 </div>

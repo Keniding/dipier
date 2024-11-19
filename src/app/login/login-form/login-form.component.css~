@@ -1,0 +1,51 @@
+// Estilos para corregir el Material Design
+::ng-deep .mat-form-field-appearance-outline {
+  .mat-form-field-wrapper {
+    margin: 0;
+  }
+
+  .mat-form-field-flex {
+    padding: 0 0.75rem;
+    margin-top: 0;
+  }
+
+  .mat-form-field-outline {
+    background-color: rgb(239 246 255 / 0.5);
+    border-radius: 0.5rem;
+  }
+
+  .mat-form-field-outline-start,
+  .mat-form-field-outline-end {
+    border-width: 2px;
+    border-color: rgb(219 234 254);
+  }
+
+  &.mat-focused {
+    .mat-form-field-outline-thick {
+      color: rgb(147 197 253);
+    }
+  }
+
+// Corrige la línea vertical
+.mat-form-field-outline-gap {
+  border-top: none !important;
+}
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: white;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: rgb(147, 197, 253); /* blue-300 */
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-start,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-end {
+  border-radius: 0.5rem !important;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-gap {
+  border-radius: 0.5rem !important;
+  border-top-color: transparent !important;
+}

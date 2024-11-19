@@ -1,14 +1,121 @@
-<div class="progress mb-4">
-  <div class="step" [class.completed]="currentStep >= 1">
-    <div class="step-circle">1</div>
-    <div class="step-name">Productos</div>
+<div class="flex items-center justify-between w-full max-w-3xl mx-auto mb-8 px-4">
+  <!-- Paso 1: Productos -->
+  <div class="relative flex flex-col items-center flex-1">
+    <!-- Línea de conexión -->
+    <div class="absolute w-full h-1 top-5 left-[50%] bg-gray-200">
+      <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
+           [ngStyle]="{width: currentStep >= 2 ? '100%' : '0%'}"></div>
+    </div>
+
+    <!-- Círculo con icono -->
+    <div class="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 group"
+         [class.border-gray-300]="currentStep < 1"
+         [class.bg-white]="currentStep < 1"
+         [class.border-blue-500]="currentStep >= 1"
+         [class.bg-gradient-to-r]="currentStep >= 1"
+         [class.from-blue-500]="currentStep >= 1"
+         [class.to-indigo-500]="currentStep >= 1"
+         [class.shadow-lg]="currentStep >= 1">
+
+      <!-- Número o Check -->
+      <span class="text-sm font-semibold transition-all duration-300"
+            [class.text-gray-500]="currentStep < 1"
+            [class.text-white]="currentStep >= 1">
+        <svg *ngIf="currentStep > 1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span *ngIf="currentStep <= 1">1</span>
+      </span>
+
+      <!-- Efecto hover -->
+      <div class="absolute w-full h-full rounded-full opacity-0 group-hover:opacity-25 bg-white transition-opacity duration-300"></div>
+    </div>
+
+    <!-- Texto del paso -->
+    <div class="mt-3 text-center">
+      <span class="text-sm font-medium transition-all duration-300"
+            [class.text-gray-500]="currentStep < 1"
+            [class.text-blue-600]="currentStep >= 1">
+        Productos
+      </span>
+    </div>
   </div>
-  <div class="step" [class.completed]="currentStep >= 2">
-    <div class="step-circle">2</div>
-    <div class="step-name">Método de Pago</div>
+
+  <!-- Paso 2: Método de Pago -->
+  <div class="relative flex flex-col items-center flex-1">
+    <!-- Línea de conexión -->
+    <div class="absolute w-full h-1 top-5 left-[50%] bg-gray-200">
+      <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
+           [ngStyle]="{width: currentStep >= 3 ? '100%' : '0%'}"></div>
+    </div>
+
+    <!-- Círculo con icono -->
+    <div class="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 group"
+         [class.border-gray-300]="currentStep < 2"
+         [class.bg-white]="currentStep < 2"
+         [class.border-blue-500]="currentStep >= 2"
+         [class.bg-gradient-to-r]="currentStep >= 2"
+         [class.from-blue-500]="currentStep >= 2"
+         [class.to-indigo-500]="currentStep >= 2"
+         [class.shadow-lg]="currentStep >= 2">
+
+      <!-- Número o Check -->
+      <span class="text-sm font-semibold transition-all duration-300"
+            [class.text-gray-500]="currentStep < 2"
+            [class.text-white]="currentStep >= 2">
+        <svg *ngIf="currentStep > 2" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span *ngIf="currentStep <= 2">2</span>
+      </span>
+
+      <!-- Efecto hover -->
+      <div class="absolute w-full h-full rounded-full opacity-0 group-hover:opacity-25 bg-white transition-opacity duration-300"></div>
+    </div>
+
+    <!-- Texto del paso -->
+    <div class="mt-3 text-center">
+      <span class="text-sm font-medium transition-all duration-300"
+            [class.text-gray-500]="currentStep < 2"
+            [class.text-blue-600]="currentStep >= 2">
+        Método de Pago
+      </span>
+    </div>
   </div>
-  <div class="step" [class.completed]="currentStep === 3">
-    <div class="step-circle">3</div>
-    <div class="step-name">Confirmación</div>
+
+  <!-- Paso 3: Confirmación -->
+  <div class="relative flex flex-col items-center flex-1">
+    <!-- Círculo con icono -->
+    <div class="relative z-10 flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 group"
+         [class.border-gray-300]="currentStep < 3"
+         [class.bg-white]="currentStep < 3"
+         [class.border-blue-500]="currentStep === 3"
+         [class.bg-gradient-to-r]="currentStep === 3"
+         [class.from-blue-500]="currentStep === 3"
+         [class.to-indigo-500]="currentStep === 3"
+         [class.shadow-lg]="currentStep === 3">
+
+      <!-- Número o Check -->
+      <span class="text-sm font-semibold transition-all duration-300"
+            [class.text-gray-500]="currentStep < 3"
+            [class.text-white]="currentStep === 3">
+        <svg *ngIf="currentStep === 3" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span *ngIf="currentStep < 3">3</span>
+      </span>
+
+      <!-- Efecto hover -->
+      <div class="absolute w-full h-full rounded-full opacity-0 group-hover:opacity-25 bg-white transition-opacity duration-300"></div>
+    </div>
+
+    <!-- Texto del paso -->
+    <div class="mt-3 text-center">
+      <span class="text-sm font-medium transition-all duration-300"
+            [class.text-gray-500]="currentStep < 3"
+            [class.text-blue-600]="currentStep === 3">
+        Confirmación
+      </span>
+    </div>
   </div>
 </div>

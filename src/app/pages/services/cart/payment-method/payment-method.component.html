@@ -1,44 +1,74 @@
-<div class="space-y-6">
-  <h2 class="text-2xl font-bold text-gray-800 mb-4">Seleccione método de pago</h2>
+<div class="space-y-6 max-w-3xl mx-auto p-6" style="background: linear-gradient(to bottom, #f8faff, #ffffff);">
+  <h2 class="text-3xl font-bold text-indigo-900 mb-6 flex items-center gap-3">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    Método de Pago
+  </h2>
 
-  <!-- Total amount display -->
-  <div class="bg-gray-50 p-4 rounded-lg mb-4">
-    <div class="text-lg font-semibold">Total a pagar:</div>
-    <div class="text-2xl text-green-600">{{ totalAmount | currency:'USD':'symbol':'1.2-2' }}</div>
+  <!-- Total amount display with glass effect -->
+  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm backdrop-blur-sm">
+    <div class="text-lg font-medium text-indigo-700">Total a pagar:</div>
+    <div class="text-3xl font-bold text-blue-600 mt-2">
+      {{ totalAmount | currency:'USD':'symbol':'1.2-2' }}
+    </div>
   </div>
 
   <!-- Loading states -->
-  <div *ngIf="loading || processingPayment" class="flex justify-center py-4">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-    <span *ngIf="processingPayment" class="ml-2">Procesando pago...</span>
+  <div *ngIf="loading || processingPayment" class="flex flex-col items-center justify-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <span *ngIf="processingPayment" class="mt-4 text-indigo-600 font-medium">Procesando pago...</span>
   </div>
 
   <!-- Error message -->
-  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-    <span class="block sm:inline">{{ error }}</span>
+  <div *ngIf="error"
+       class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-xl shadow-sm"
+       role="alert">
+    <div class="flex items-center">
+      <svg class="h-5 w-5 text-red-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="text-red-700">{{ error }}</span>
+    </div>
   </div>
 
   <!-- Payment methods list -->
   <div *ngIf="!loading && !processingPayment && paymentMethods.length > 0" class="space-y-4">
     <div *ngFor="let method of paymentMethods"
          (click)="onSelectPaymentMethod(method)"
-         class="p-4 border rounded-lg cursor-pointer transition-all duration-200"
-         [class.border-green-500]="selectedPaymentMethod?.id === method.id"
-         [class.bg-green-50]="selectedPaymentMethod?.id === method.id">
+         class="p-5 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02]"
+         [class.bg-gradient-to-r]="selectedPaymentMethod?.id === method.id"
+         [class.from-blue-50]="selectedPaymentMethod?.id === method.id"
+         [class.to-indigo-50]="selectedPaymentMethod?.id === method.id"
+         [class.border-2]="selectedPaymentMethod?.id === method.id"
+         [class.border-blue-400]="selectedPaymentMethod?.id === method.id"
+         [class.shadow-md]="selectedPaymentMethod?.id === method.id"
+         [class.border]="selectedPaymentMethod?.id !== method.id"
+         [class.border-gray-200]="selectedPaymentMethod?.id !== method.id"
+         style="background: white;">
 
-      <div class="flex items-center space-x-3">
-        <!-- Icon based on payment type -->
-        <div class="text-xl" [ngSwitch]="method.methodType">
-          <i *ngSwitchCase="'TARJETA_CREDITO'" class="fas fa-credit-card text-blue-600"></i>
-          <i *ngSwitchCase="'TARJETA_DEBITO'" class="fas fa-credit-card text-green-600"></i>
-          <i *ngSwitchCase="'BILLETERA_DIGITAL'" class="fas fa-wallet text-purple-600"></i>
-          <i *ngSwitchCase="'EFECTIVO'" class="fas fa-money-bill text-green-600"></i>
-          <i *ngSwitchCase="'BANCA'" class="fas fa-university text-blue-800"></i>
+      <div class="flex items-center space-x-4">
+        <!-- Icon based on payment type with enhanced styling -->
+        <div class="p-3 rounded-full"
+             [ngClass]="{
+               'bg-blue-100 text-blue-600': method.methodType === 'TARJETA_CREDITO',
+               'bg-green-100 text-green-600': method.methodType === 'TARJETA_DEBITO',
+               'bg-purple-100 text-purple-600': method.methodType === 'BILLETERA_DIGITAL',
+               'bg-emerald-100 text-emerald-600': method.methodType === 'EFECTIVO',
+               'bg-indigo-100 text-indigo-600': method.methodType === 'BANCA'
+             }">
+          <i class="text-2xl" [ngSwitch]="method.methodType">
+            <i *ngSwitchCase="'TARJETA_CREDITO'" class="fas fa-credit-card"></i>
+            <i *ngSwitchCase="'TARJETA_DEBITO'" class="fas fa-credit-card"></i>
+            <i *ngSwitchCase="'BILLETERA_DIGITAL'" class="fas fa-wallet"></i>
+            <i *ngSwitchCase="'EFECTIVO'" class="fas fa-money-bill"></i>
+            <i *ngSwitchCase="'BANCA'" class="fas fa-university"></i>
+          </i>
         </div>
 
         <!-- Payment method details -->
         <div class="flex-1">
-          <div class="font-semibold" [ngSwitch]="method.methodType">
+          <div class="font-semibold text-indigo-900" [ngSwitch]="method.methodType">
             <span *ngSwitchCase="'TARJETA_CREDITO'">Tarjeta de Crédito</span>
             <span *ngSwitchCase="'TARJETA_DEBITO'">Tarjeta de Débito</span>
             <span *ngSwitchCase="'BILLETERA_DIGITAL'">Billetera Digital</span>
@@ -46,7 +76,7 @@
             <span *ngSwitchCase="'BANCA'">Transferencia Bancaria</span>
           </div>
 
-          <div class="text-sm text-gray-600" *ngIf="getFirstDetail(method) as detail" [ngSwitch]="detail.type">
+          <div class="text-sm text-blue-600 mt-1" *ngIf="getFirstDetail(method) as detail" [ngSwitch]="detail.type">
             <span *ngSwitchCase="'CARD'">**** **** **** {{ getCardNumber(detail)?.slice(-4) }}</span>
             <span *ngSwitchCase="'WALLET'">{{ getPhoneNumber(detail) }}</span>
             <span *ngSwitchCase="'BANK_ACCOUNT'">{{ getBankName(detail) }}</span>
@@ -54,10 +84,12 @@
           </div>
         </div>
 
-        <!-- Selected indicator -->
+        <!-- Selected indicator with animation -->
         <div *ngIf="selectedPaymentMethod?.id === method.id"
-             class="text-green-500">
-          <i class="fas fa-check-circle"></i>
+             class="text-blue-500 animate-pulse">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
       </div>
     </div>
@@ -65,28 +97,36 @@
 
   <!-- No payment methods message -->
   <div *ngIf="!loading && !processingPayment && paymentMethods.length === 0"
-       class="text-center py-4 text-gray-600">
-    No hay métodos de pago disponibles
+       class="text-center py-8 bg-blue-50 rounded-xl border border-blue-100">
+    <svg class="h-16 w-16 mx-auto text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <p class="text-indigo-700 font-medium">No hay métodos de pago disponibles</p>
   </div>
 
   <!-- Action buttons -->
-  <div class="flex justify-between mt-6">
+  <div class="flex justify-between mt-8 gap-4">
     <button (click)="onPrevStep()"
             [disabled]="processingPayment"
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            class="px-6 py-3 bg-white border border-blue-200 text-indigo-600 rounded-xl hover:bg-blue-50 transition-all duration-300 flex items-center gap-2 font-medium"
             [class.opacity-50]="processingPayment"
             [class.cursor-not-allowed]="processingPayment">
-      <i class="fas fa-arrow-left mr-2"></i>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
       Anterior
     </button>
 
     <button (click)="onConfirm()"
             [disabled]="!selectedPaymentMethod || processingPayment"
+            class="px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all duration-300 transform hover:scale-[1.02]"
             [class.opacity-50]="!selectedPaymentMethod || processingPayment"
             [class.cursor-not-allowed]="!selectedPaymentMethod || processingPayment"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            style="background: linear-gradient(to right, #4f46e5, #3b82f6); color: white;">
       {{ processingPayment ? 'Procesando...' : 'Confirmar Pago' }}
-      <i class="fas fa-arrow-right ml-2"></i>
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
     </button>
   </div>
 </div>
