@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { BaseApiService } from "./common/base-api-service.service";
+import {CreateCartItem} from "../models/cart.types";
 
 interface CartItem {
   id: string;
@@ -38,7 +39,7 @@ export class CartService extends BaseApiService {
     return this.http.get<CartItem[]>(`${this.apiUrl}/${customerId}/items`, { headers });
   }
 
-  addItemToCart(customerId: string, item: CartItem): Observable<void> {
+  addItemToCart(customerId: string, item: CreateCartItem): Observable<void> {
     const headers = this.createHeaders();
     return this.http.post<void>(`${this.apiUrl}/${customerId}/add`, item, { headers });
   }

@@ -11,11 +11,12 @@ import {Subscription, forkJoin, map, delay} from 'rxjs';
 import {catchError, finalize} from 'rxjs/operators';
 import {ProductService} from "../../../../services/product.service";
 import {MinioService} from "../../../../services/minio.service";
+import {SearchComponent} from "../cart-items/search/search.component";
 
 import {
   Cart,
   CartItem,
-  CartProductItem,
+  CartProductItem, CreateCartItem,
   MinioResponseItem,
   Producto
 } from '../../../../models/cart.types';
@@ -30,7 +31,9 @@ import {
     PaymentMethodComponent,
     ConfirmationComponent,
     RouterLink,
-    NgClass
+    NgClass,
+
+    SearchComponent
   ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
@@ -45,12 +48,15 @@ export class CartComponent implements OnInit, OnDestroy {
   cartProducts: CartProductItem[] = [];
   private readonly defaultImageUrl = 'https://via.placeholder.com/50';
 
+  isSearchModalOpen = false;
+
   constructor(
     private cartServiceBusiness: CartServiceServiceBusiness,
     private cartService: CartService,
     private productService: ProductService,
     private minioService: MinioService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.subscription = this.cartServiceBusiness.currentCustomerId.subscribe(id => {
@@ -130,11 +136,11 @@ export class CartComponent implements OnInit, OnDestroy {
       return this.minioService.getObjectById(product.productId).pipe(
         map((response: MinioResponseItem[]) => {
           console.log('Respuesta de Minio para productId', product.productId, ':', response);
-          return { product, response };
+          return {product, response};
         }),
         catchError(error => {
           console.error(`Error loading image for productId ${product.productId}:`, error);
-          return [{ product, response: null }];
+          return [{product, response: null}];
         })
       );
     });
@@ -177,7 +183,7 @@ export class CartComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateQuantity(event: {productId: string, quantity: number}): void {
+  updateQuantity(event: { productId: string, quantity: number }): void {
     if (!this.customerId) {
       console.error('No customer ID available');
       return;
@@ -311,6 +317,55 @@ export class CartComponent implements OnInit, OnDestroy {
     this.error = null;
     if (this.customerId) {
       this.loadCartData(this.customerId);
+    }
+  }
+
+  openSearchModal() {
+    this.isSearchModalOpen = true;
+  }
+
+  closeSearchModal() {
+    this.isSearchModalOpen = false;
+  }
+
+  onAddProduct(product: Producto) {
+    const newCartItem: CreateCartItem = {
+      productId: product.id,
+      quantity: 1
+    };
+
+    if (this.customerId) {
+      this.cartService.addItemToCart(this.customerId, newCartItem).subscribe({
+        next: () => {
+          this.cartService.getCartItems(this.customerId!).subscribe({
+            next: (items) => {
+              const addedItem = items.find(item => item.productId === product.id);
+
+              if (addedItem) {
+                const newProduct: CartProductItem = {
+                  ...product,
+                  id: addedItem.id,
+                  productId: product.id,
+                  quantity: addedItem.quantity,
+                  imageUrl: product.imageUrl || this.defaultImageUrl,
+                  imageLoading: true,
+                  imageError: false,
+                  imageLoaded: false,
+                  updating: false
+                };
+                this.cartProducts = [...this.cartProducts, newProduct];
+              }
+              this.closeSearchModal();
+            },
+            error: (error) => {
+              console.error('Error al obtener los items actualizados:', error);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error al agregar producto al carrito:', error);
+        }
+      });
     }
   }
 }

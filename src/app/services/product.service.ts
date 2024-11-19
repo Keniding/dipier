@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {BaseApiService} from "./common/base-api-service.service";
+import {map} from "rxjs/operators";
 
 interface Producto {
   id: string;
@@ -54,5 +55,19 @@ export class ProductService  extends BaseApiService {
   deleteProduct(productId: string) {
     const headers = this.createHeaders();
     return this.http.delete<string>(`${this.apiUrl}/product/${productId}`, { headers });
+  }
+
+  searchProducts(term: string): Observable<Producto[]> {
+    const headers = this.createHeaders();
+    return this.getProducts().pipe(
+      map(products => {
+        const searchTerm = term.toLowerCase().trim();
+        return products.filter(product =>
+          product.name.toLowerCase().includes(searchTerm) ||
+          product.description.toLowerCase().includes(searchTerm) ||
+          product.skuCode.toLowerCase().includes(searchTerm)
+        );
+      })
+    );
   }
 }
