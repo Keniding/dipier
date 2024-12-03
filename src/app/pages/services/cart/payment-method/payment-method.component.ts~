@@ -11,7 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import {BillingService} from "../../../../services/invoice.service";
 import {CustomerService} from "../../../../services/customer.service";
-import {EmailRequest, EmailService} from "../../../../services/email.service";
+import {EmailService} from "../../../../services/email.service";
 
 @Component({
   selector: 'app-payment-method',
@@ -79,29 +79,6 @@ export class PaymentMethodComponent implements OnInit {
       };
 
       await this.billingService.updateInvoice(updatedInvoice).toPromise();
-
-      // Obtener los datos del cliente
-      this.customerService.getCustomers(true).subscribe({
-        next: (customers) => {
-          const customer = customers.find(c => c.id === this.customerId);
-          if (customer) {
-            const emailRequest: EmailRequest = {
-              to: customer.email,
-              subject: `Confirmación de Pago - Factura #${createdInvoice.id}`,
-              body: `Se ha procesado su pago por $${this.totalAmount}`,
-              recipientName: `${customer.firstName} ${customer.lastName}`,
-              buttonText: 'Ver Factura',
-              buttonUrl: `/invoices/${createdInvoice.id}`,
-              footerText: 'Gracias por su compra'
-            };
-
-            this.emailService.sendEmail(emailRequest).subscribe({
-              error: (error) => console.error('Error al enviar email:', error)
-            });
-          }
-        },
-        error: (error) => console.error('Error al obtener datos del cliente:', error)
-      });
 
       this.paymentProcessed.emit(createdInvoice.id);
       this.confirmPaymentEvent.emit();
