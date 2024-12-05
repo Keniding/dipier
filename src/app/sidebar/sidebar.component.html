@@ -1,0 +1,66 @@
+<aside
+  class="fixed left-0 top-0 z-50 h-screen w-64 bg-gradient-to-b from-indigo-950 to-blue-900 text-white shadow-2xl transition-all duration-300 ease-in-out"
+  [ngClass]="{'w-20': !isOpen}">
+
+  <!-- Header -->
+  <div class="flex h-16 items-center justify-between border-b border-white/10 px-4 backdrop-blur-sm">
+    <div class="flex items-center space-x-3 overflow-hidden">
+      <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
+        <img
+          *ngIf="isOpen"
+          src="assets/logo.png"
+          alt="Logo"
+          class="h-6 w-6 object-contain transition-all duration-300">
+        <img
+          *ngIf="!isOpen"
+          src="assets/logo-icon.png"
+          alt="Logo"
+          class="h-6 w-6 object-contain transition-all duration-300">
+      </div>
+      <h1
+        *ngIf="isOpen"
+        class="text-lg font-medium tracking-wide text-white transition-all duration-300">
+        Panel Admin
+      </h1>
+    </div>
+    <button
+      (click)="toggleSidebar()"
+      class="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 active:bg-white/20"
+      [attr.aria-label]="isOpen ? 'Colapsar menú' : 'Expandir menú'">
+      <i class="material-icons text-xl">
+        {{ isOpen ? 'chevron_left' : 'chevron_right' }}
+      </i>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex flex-col space-y-1 p-3">
+    <ng-container *ngFor="let item of menuItems">
+      <a [routerLink]="item.route"
+         routerLinkActive="bg-white/15 text-white before:opacity-100"
+         [attr.title]="!isOpen ? item.label : ''"
+         class="group relative flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition-all
+                before:absolute before:left-0 before:top-[10%] before:h-[80%] before:w-1 before:rounded-full before:bg-blue-400 before:opacity-0 before:transition-all
+                hover:bg-white/10 hover:text-white hover:before:opacity-100">
+
+        <!-- Icon and Label -->
+        <div class="flex items-center gap-3">
+          <i class="material-icons text-xl transition-transform group-hover:scale-110">{{item.icon}}</i>
+          <span
+            *ngIf="isOpen"
+            class="truncate transition-all duration-300">
+          {{item.label}}
+        </span>
+        </div>
+      </a>
+    </ng-container>
+  </nav>
+
+</aside>
+
+<!-- Overlay for mobile -->
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 bg-black/60 backdrop-blur-sm lg:hidden"
+  (click)="toggleSidebar()">
+</div>

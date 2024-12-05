@@ -1,0 +1,84 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-white">
+  <div class="flex h-16 items-center justify-between border-b border-gray-100 px-4 lg:px-8">
+
+    <!-- Logo y título -->
+    <div class="flex items-center gap-3">
+      <svg
+        class="h-8 w-8 text-blue-600"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5zM4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4z"
+          fill="currentColor"
+          opacity="0.7"
+        />
+        <path
+          d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5z"
+          fill="currentColor"
+        />
+        <path
+          d="M14 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4z"
+          fill="currentColor"
+          opacity="0.7"
+        />
+      </svg>
+    </div>
+
+    <div
+      class="hidden text-lg font-medium text-gray-900 lg:block text-start flex-1 items-center justify-center">
+      Dashboard
+    </div>
+
+    <!-- Sección central con búsqueda -->
+    <div class="flex-1 px-8">
+      <div class="relative max-w-md">
+        <input
+          type="search"
+          placeholder="Buscar..."
+          class="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-4 pr-10 text-sm outline-none transition-all
+                         focus:border-blue-500 focus:bg-white focus:shadow-sm"
+        >
+        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <i class="material-icons text-lg">search</i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sección derecha con notificaciones y perfil -->
+    <div class="flex items-center gap-4">
+      <!-- Notificaciones -->
+      <button class="relative rounded-full p-2 text-gray-500 hover:bg-gray-100">
+        <i class="material-icons">notifications</i>
+        <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+      </button>
+
+      <!-- Mensajes -->
+      <button class="rounded-full p-2 text-gray-500 hover:bg-gray-100">
+        <i class="material-icons">chat</i>
+      </button>
+
+      <!-- Separador vertical -->
+      <div class="h-6 w-px bg-gray-200"></div>
+
+      <!-- Perfil -->
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col items-end">
+          <span class="text-sm font-medium text-gray-700">John Doe</span>
+          <span class="text-xs text-gray-500">Administrador</span>
+        </div>
+        <button class="group relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-gray-100 transition-all hover:ring-blue-500">
+          <img
+            src="https://ui-avatars.com/api/?name=John+Doe&background=e0e7ff&color=3b82f6"
+            alt="Profile"
+            class="h-full w-full object-cover"
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Espaciador para compensar el header fijo -->
+<div class="h-16"></div>

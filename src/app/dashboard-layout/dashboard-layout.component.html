@@ -1,0 +1,41 @@
+<div class="flex min-h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content Wrapper -->
+  <div class="flex flex-1 flex-col transition-all duration-300 ease-in-out"
+       [ngClass]="{'lg:ml-64': true}">
+
+    <!-- Top Navigation Bar -->
+    <app-header></app-header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-auto px-6 py-8">
+      <!-- Breadcrumb -->
+      <div class="mb-6 flex items-center space-x-2 text-sm">
+        <span class="text-gray-500 hover:text-primary-DEFAULT">Dashboard</span>
+        <i class="material-icons text-xs text-gray-400">chevron_right</i>
+        <span class="font-medium text-primary-DEFAULT">Home</span>
+      </div>
+
+      <!-- Content Container -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition-all duration-300 ease-in-out hover:shadow-md">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 bg-white px-6 py-4">
+      <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-500">
+              © 2024 Tu Empresa. Todos los derechos reservados.
+            </span>
+        <div class="flex items-center space-x-4">
+          <a href="#" class="text-sm text-gray-500 transition-colors duration-300 hover:text-primary-DEFAULT">Privacidad</a>
+          <a href="#" class="text-sm text-gray-500 transition-colors duration-300 hover:text-primary-DEFAULT">Términos</a>
+          <a href="#" class="text-sm text-gray-500 transition-colors duration-300 hover:text-primary-DEFAULT">Contacto</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

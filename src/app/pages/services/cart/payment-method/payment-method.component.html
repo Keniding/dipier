@@ -77,7 +77,7 @@
           </div>
 
           <div class="text-sm text-blue-600 mt-1" *ngIf="getFirstDetail(method) as detail" [ngSwitch]="detail.type">
-            <span *ngSwitchCase="'CARD'">**** **** **** {{ getCardNumber(detail)?.slice(-4) }}</span>
+            <span *ngSwitchCase="'CARD'">**** **** **** {{ getCardNumber(detail).slice(-4) }}</span>
             <span *ngSwitchCase="'WALLET'">{{ getPhoneNumber(detail) }}</span>
             <span *ngSwitchCase="'BANK_ACCOUNT'">{{ getBankName(detail) }}</span>
             <span *ngSwitchCase="'CASH'">{{ getCurrency(detail) }}</span>

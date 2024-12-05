@@ -1,5 +1,12 @@
-<nav>
-  <a routerLink="/">Home</a>
-  <a routerLink="/login">Login</a>
-</nav>
-<router-outlet />
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+  <div class="main-content">
+    <nav class="top-nav">
+      <a routerLink="/home" routerLinkActive="active">Home</a>
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+    </nav>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
