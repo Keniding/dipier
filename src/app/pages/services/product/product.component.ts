@@ -1,20 +1,19 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import {CommonModule, DOCUMENT, NgOptimizedImage} from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { CommonModule, DOCUMENT, NgOptimizedImage } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Subscription } from 'rxjs';
-
 import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID} from '@angular/core';
-import {ProductService} from "../../../services/product.service";
-import {StoreProductComponent} from "./store-product/store-product.component";
-import {MatDialog} from "@angular/material/dialog";
-import {UpdateProductComponent} from "./update-product/update-product.component";
-import {MinioService} from "../../../services/minio.service";
-
+import { PLATFORM_ID } from '@angular/core';
+import { ProductService } from "../../../services/product.service";
+import { StoreProductComponent } from "./store-product/store-product.component";
+import { MatDialog } from "@angular/material/dialog";
+import { UpdateProductComponent } from "./update-product/update-product.component";
+import { MinioService } from "../../../services/minio.service";
 
 interface Producto {
   id: string;
@@ -23,7 +22,6 @@ interface Producto {
   skuCode: string;
   price: number;
   categories: { id: string; name: string }[];
-
   imageUrl?: string;
 }
 
@@ -32,22 +30,21 @@ interface Producto {
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatCardModule,
     NgOptimizedImage,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit, OnDestroy {
-  product: Producto[] = [];
-  displayedColumns: string[] = ['imagen', 'id', 'name', 'price', 'acciones'];
-  dataSource = new MatTableDataSource<Producto>();
+  productos: Producto[] = [];
   private themeSubscription: Subscription | undefined;
-  private readonly defaultImageUrl = 'https://via.placeholder.com/50';
+  protected readonly defaultImageUrl = 'https://via.placeholder.com/300';
 
   constructor(
     private productService: ProductService,
@@ -65,11 +62,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.productService.getProducts().subscribe({
         next: (data) => {
-          this.product = data;
-          this.product.forEach(product => {
+          this.productos = data;
+          this.productos.forEach(product => {
             this.loadProductImage(product);
           });
-          this.dataSource.data = data;
         },
         error: (error) => {
           console.error('Error al cargar los productos:', error);
@@ -86,12 +82,10 @@ export class ProductComponent implements OnInit, OnDestroy {
         } else {
           product.imageUrl = this.defaultImageUrl;
         }
-        this.dataSource.data = [...this.dataSource.data];
       },
       error: (error) => {
         console.error('Error al cargar la imagen:', error);
         product.imageUrl = this.defaultImageUrl;
-        this.dataSource.data = [...this.dataSource.data];
       }
     });
   }
@@ -109,7 +103,6 @@ export class ProductComponent implements OnInit, OnDestroy {
             next: (response) => {
               if (response && response.length > 0 && response[0].estado === 'exitoso') {
                 producto.imageUrl = response[0].url;
-                this.dataSource.data = [...this.dataSource.data];
               } else {
                 console.error('Error: Respuesta de carga no válida');
               }
@@ -166,17 +159,15 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   eliminarProducto(producto: Producto) {
     if (isPlatformBrowser(this.platformId)) {
-      this.productService.deleteProduct(producto.id).subscribe(
-        {
-          next: () => {
-            console.log('Eliminado: ', producto.id)
-            this.loadProducts()
-          },
-          error: (error) => {
-            console.log('error' + error)
-          }
+      this.productService.deleteProduct(producto.id).subscribe({
+        next: () => {
+          console.log('Eliminado: ', producto.id);
+          this.loadProducts();
+        },
+        error: (error) => {
+          console.log('error', error);
         }
-      )
+      });
     }
   }
 }

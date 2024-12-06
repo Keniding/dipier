@@ -10,7 +10,7 @@ import { CartComponent } from "./pages/services/cart/cart/cart.component";
 import {DashboardLayoutComponent} from "./dashboard-layout/dashboard-layout.component";
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginFormComponent },
   {
     path: 'dashboard',

@@ -31,7 +31,7 @@ export class LoginFormComponent {
         console.log('Login successful', response);
         localStorage.setItem('authToken', response.token);
 
-        this.router.navigate(['/cart']).then(success => {
+        this.router.navigate(['/dashboard']).then(success => {
           if (success) {
             console.log('Navigation to home was successful!');
           } else {
