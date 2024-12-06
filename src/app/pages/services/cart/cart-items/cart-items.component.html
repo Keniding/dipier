@@ -1,4 +1,4 @@
-<div class="cart-container max-w-4xl mx-auto p-6" style="background: linear-gradient(to bottom, #f8faff, #ffffff);">
+<div class="cart-container max-w-9xl mx-auto p-6" style="background: linear-gradient(to bottom, #f8faff, #ffffff);">
   <!-- Header with animation -->
   <div class="mb-8 relative">
     <h2 class="text-2xl font-bold text-indigo-900 flex items-center gap-3">
@@ -20,124 +20,133 @@
     <p class="mt-4 text-indigo-600">Cargando tu carrito...</p>
   </div>
 
-  <!-- Cart Content with new layout -->
-  <div *ngIf="!isLoading" class="space-y-6">
-    <!-- Empty Cart with illustration -->
-    <div *ngIf="cartProducts.length === 0" class="text-center py-12 bg-gradient-to-b from-blue-50 to-white rounded-xl border border-blue-100">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-blue-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-      <p class="text-indigo-600 text-lg">Tu carrito está vacío</p>
-      <button class="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-        Continuar comprando
-      </button>
-    </div>
+  <!-- Two Column Layout -->
+  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column - Cart Items -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Empty Cart with illustration -->
+      <div *ngIf="cartProducts.length === 0" class="text-center py-12 bg-gradient-to-b from-blue-50 to-white rounded-xl border border-blue-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-blue-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <p class="text-indigo-600 text-lg">Tu carrito está vacío</p>
+        <button class="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+          Continuar comprando
+        </button>
+      </div>
 
-    <!-- Cart Items with enhanced design -->
-    <div *ngFor="let product of cartProducts"
-         class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-blue-100"
-         [class.opacity-75]="product.updating">
-
-      <div class="flex items-center p-6" style="background: linear-gradient(to right, #f8faff, #ffffff);">
-        <!-- Product Image with skeleton loading -->
-        <div class="relative w-24 h-24 flex-shrink-0">
-          <div *ngIf="!product.imageLoaded && !product.imageError"
-               class="absolute inset-0 bg-blue-100 rounded-lg animate-pulse">
-          </div>
-          <img [src]="product.imageUrl"
-               [alt]="product.name"
-               class="w-full h-full object-cover rounded-lg transition-all duration-300 shadow-sm"
-               [ngClass]="{
-                 'opacity-0 scale-95': !product.imageLoaded && !product.imageError,
-                 'opacity-100 scale-100': product.imageLoaded || product.imageError
-               }"
-               (load)="onImageLoad(product)"
-               (error)="onImageError(product)">
-        </div>
-
-        <!-- Product Details with improved typography -->
-        <div class="flex-grow ml-6">
-          <h3 class="text-lg font-semibold text-indigo-900 group-hover:text-blue-600 transition-colors">
-            {{product.name}}
-          </h3>
-          <p class="text-sm text-blue-400">SKU: {{product.skuCode}}</p>
-          <p class="text-blue-600 font-medium text-lg mt-1">
-            {{product.price | currency:'PE'}}
-          </p>
-        </div>
-
-        <!-- Quantity Controls with animations -->
-        <div class="flex items-center space-x-3">
-          <div class="flex items-center bg-blue-50 rounded-full p-1">
-            <button
-              (click)="handleQuantityChange(product, product.quantity - 1)"
-              [disabled]="product.updating"
-              class="w-8 h-8 rounded-full hover:bg-white disabled:opacity-50 flex items-center justify-center transition-all duration-200 text-blue-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-              </svg>
-            </button>
-
-            <span class="w-10 text-center font-medium text-indigo-900">{{product.quantity}}</span>
-
-            <button
-              (click)="handleQuantityChange(product, product.quantity + 1)"
-              [disabled]="product.updating"
-              class="w-8 h-8 rounded-full hover:bg-white disabled:opacity-50 flex items-center justify-center transition-all duration-200 text-blue-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-            </button>
+      <!-- Cart Items List -->
+      <div *ngFor="let product of cartProducts"
+           class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-blue-100"
+           [class.opacity-75]="product.updating">
+        <!-- Product Content - Same as original -->
+        <div class="flex items-center p-6" style="background: linear-gradient(to right, #f8faff, #ffffff);">
+          <!-- Product Image -->
+          <div class="relative w-24 h-24 flex-shrink-0">
+            <div *ngIf="!product.imageLoaded && !product.imageError"
+                 class="absolute inset-0 bg-blue-100 rounded-lg animate-pulse">
+            </div>
+            <img [src]="product.imageUrl"
+                 [alt]="product.name"
+                 class="w-full h-full object-cover rounded-lg transition-all duration-300 shadow-sm"
+                 [ngClass]="{
+                   'opacity-0 scale-95': !product.imageLoaded && !product.imageError,
+                   'opacity-100 scale-100': product.imageLoaded || product.imageError
+                 }"
+                 (load)="onImageLoad(product)"
+                 (error)="onImageError(product)">
           </div>
 
-          <button
-            (click)="openDeleteDialog(product)"
-            [disabled]="product.updating"
-            class="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-all duration-200 disabled:opacity-50">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
+          <!-- Product Details -->
+          <div class="flex-grow ml-6">
+            <h3 class="text-lg font-semibold text-indigo-900 group-hover:text-blue-600 transition-colors">
+              {{product.name}}
+            </h3>
+            <p class="text-sm text-blue-400">SKU: {{product.skuCode}}</p>
+            <p class="text-blue-600 font-medium text-lg mt-1">
+              {{product.price | currency:'PE'}}
+            </p>
+          </div>
 
-      <!-- Error Message with animation -->
-      <div *ngIf="product.error"
-           class="absolute bottom-0 left-0 right-0 bg-red-50 text-red-500 text-sm p-3 transform translate-y-0 transition-transform duration-300">
-        {{product.error}}
+          <!-- Quantity Controls -->
+          <div class="flex items-center space-x-3">
+            <div class="flex items-center bg-blue-50 rounded-full p-1">
+              <button
+                (click)="handleQuantityChange(product, product.quantity - 1)"
+                [disabled]="product.updating"
+                class="w-8 h-8 rounded-full hover:bg-white disabled:opacity-50 flex items-center justify-center transition-all duration-200 text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                </svg>
+              </button>
+
+              <span class="w-10 text-center font-medium text-indigo-900">{{product.quantity}}</span>
+
+              <button
+                (click)="handleQuantityChange(product, product.quantity + 1)"
+                [disabled]="product.updating"
+                class="w-8 h-8 rounded-full hover:bg-white disabled:opacity-50 flex items-center justify-center transition-all duration-200 text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </div>
+
+            <button
+              (click)="openDeleteDialog(product)"
+              [disabled]="product.updating"
+              class="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-all duration-200 disabled:opacity-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="product.error"
+             class="absolute bottom-0 left-0 right-0 bg-red-50 text-red-500 text-sm p-3 transform translate-y-0 transition-transform duration-300">
+          {{product.error}}
+        </div>
       </div>
     </div>
 
-    <!-- Total and Checkout with enhanced design -->
-    <div class="mt-8 rounded-xl p-6 border border-blue-100"
-         style="background: linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%);">
-      <div class="flex justify-between items-center mb-6">
-        <span class="text-indigo-700">Subtotal</span>
-        <span class="text-indigo-900">{{calculateTotal() | currency:'USD'}}</span>
-      </div>
+    <!-- Right Column - Order Summary -->
+    <div class="lg:col-span-2 xl:col-span-1 w-full max-w-md mx-auto lg:mx-0">
+      <div class="sticky top-6 rounded-xl p-8 border border-blue-100 w-full"
+           style="background: linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%);">
+        <h3 class="text-2xl font-bold text-indigo-900 mb-8">Resumen del Pedido</h3>
 
-      <div class="flex justify-between items-center mb-6">
-        <span class="text-indigo-700">Envío</span>
-        <span class="text-indigo-900">Gratis</span>
-      </div>
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <span class="text-lg text-indigo-700">Subtotal</span>
+            <span class="text-lg text-indigo-900">{{calculateTotal() | currency:'USD'}}</span>
+          </div>
 
-      <div class="flex justify-between items-center border-t border-blue-200 pt-4">
-        <span class="text-xl font-bold text-indigo-900">Total</span>
-        <span class="text-2xl font-bold text-blue-600">
+          <div class="flex justify-between items-center">
+            <span class="text-lg text-indigo-700">Envío</span>
+            <span class="text-lg text-indigo-900">Gratis</span>
+          </div>
+
+          <div class="flex justify-between items-center border-t border-blue-200 pt-6 mt-6">
+            <span class="text-xl font-bold text-indigo-900">Total</span>
+            <span class="text-2xl font-bold text-blue-600">
           {{calculateTotal() | currency:'USD'}}
         </span>
-      </div>
+          </div>
+        </div>
 
-      <button
-        (click)="onNextStep()"
-        [disabled]="hasUpdatingItems() || cartProducts.length === 0"
-        class="w-full mt-6 py-4 text-white text-lg font-medium rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-        style="background: linear-gradient(to right, #4f46e5, #3b82f6)">
-        <span>Continuar con el pago</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        <button
+          (click)="onNextStep()"
+          [disabled]="hasUpdatingItems() || cartProducts.length === 0"
+          class="w-full mt-6 py-4 text-white text-lg font-medium rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+          style="background: linear-gradient(to right, #4f46e5, #3b82f6)">
+          <span>Continuar con el pago</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>

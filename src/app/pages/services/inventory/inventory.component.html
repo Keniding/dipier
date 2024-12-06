@@ -1,52 +1,76 @@
-<div class="min-h-screen mat-app-background">
-  <mat-toolbar color="primary" class="flex flex-wrap items-center">
-    <span class="text-lg md:text-xl font-bold">Sistema de Gestión de Inventario</span>
-    <span class="flex-grow"></span>
-    <button mat-raised-button color="accent" class="mr-4 mb-2 md:mb-0" (click)="addInventory()">
-      <mat-icon class="mr-2">add</mat-icon>
-      <span class="hidden sm:inline">Inventory</span>
-    </button>
+<div class="min-h-screen bg-gray-50">
+  <!-- Header con diseño moderno -->
+  <mat-toolbar class="bg-gradient-to-r from-blue-600 to-blue-800 shadow-md">
+    <div class="container mx-auto px-4 py-2 flex items-center justify-between w-full">
+      <div class="flex items-center space-x-3">
+        <mat-icon>inventory_2</mat-icon>
+        <span class="text-xl font-bold">Gestión de Inventario</span>
+      </div>
+      <button mat-fab extended color="accent" (click)="addInventory()"
+              class="bg-white hover:bg-gray-100 text-blue-600">
+        <mat-icon>add</mat-icon>
+        <span class="hidden sm:inline">Nuevo</span>
+      </button>
+    </div>
   </mat-toolbar>
 
-  <!-- Input para capturar el número -->
-  <div class="m-4">
-    <mat-form-field appearance="fill">
-      <mat-label>Ordenar por cantidad mayor a</mat-label>
-      <input matInput type="number" [(ngModel)]="filterQuantity" (input)="filterByQuantity()">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-      <mat-label>Clasificar por color</mat-label>
-      <input matInput type="number" [(ngModel)]="cantidadBase" (input)="filterCantidadBase()">
-    </mat-form-field>
-  </div>
+  <!-- Filtros con diseño mejorado -->
+  <div class="container mx-auto px-4 py-6">
+    <mat-card class="bg-white shadow-sm rounded-lg">
+      <mat-card-content class="p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Cantidad mínima</mat-label>
+            <mat-icon matPrefix class="text-gray-400 mr-2">filter_list</mat-icon>
+            <input matInput type="number" [(ngModel)]="filterQuantity"
+                   (input)="filterByQuantity()" placeholder="Filtrar por cantidad">
+          </mat-form-field>
 
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Nivel base para clasificación</mat-label>
+            <mat-icon matPrefix class="text-gray-400 mr-2">palette</mat-icon>
+            <input matInput type="number" [(ngModel)]="cantidadBase"
+                   (input)="filterCantidadBase()" placeholder="Clasificar por color">
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 mb-4 ml-4 mr-4">
-    <div *ngFor="let item of filteredProductInventoryList">
-      <mat-card [ngClass]="{'low-stock': item.quantity < cantidadBase,
-       'high-stock': item.quantity > cantidadBase,
-       'stock': item.quantity == cantidadBase}"
-                class="inventory-card shadow-lg rounded-lg">
-        <mat-card-header>
-          <mat-card-title class="text-lg font-semibold">{{ item.name }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <!--<p class="text-gray-700">SKU: {{ item.skuCode }}</p>
-          <p class="text-gray-700">Precio: {{ item.price }}</p>-->
-          <p class="text-gray-700">Cantidad: {{ item.quantity }}</p>
-        </mat-card-content>
-        <div>
-          <mat-card-actions>
-            <button mat-button
-                    [ngClass]="{'low-stock-bt': item.quantity < cantidadBase,
-       'high-stock-bt': item.quantity > cantidadBase,
-       'stock-bt': item.quantity == cantidadBase}"
-                    (click)="openDetailDialog(item)">
-              Ver Detalles
+    <!-- Grid de inventario con diseño mejorado -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <mat-card *ngFor="let item of filteredProductInventoryList"
+                [ngClass]="{'low-stock': item.quantity < cantidadBase,
+                           'high-stock': item.quantity > cantidadBase,
+                           'stock': item.quantity == cantidadBase}"
+                class="inventory-card hover:shadow-lg transition-shadow duration-200 rounded-lg overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">{{ item.name }}</h3>
+            <div [ngClass]="{'bg-red-100 text-red-800': item.quantity < cantidadBase,
+                            'bg-green-100 text-green-800': item.quantity > cantidadBase,
+                            'bg-blue-100 text-blue-800': item.quantity == cantidadBase}"
+                 class="px-3 py-1 rounded-full text-sm font-medium">
+              {{ item.quantity }}
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button mat-stroked-button
+                    [ngClass]="{'text-red-600 border-red-200 hover:bg-red-50': item.quantity < cantidadBase,
+                               'text-green-600 border-green-200 hover:bg-green-50': item.quantity > cantidadBase,
+                               'text-blue-600 border-blue-200 hover:bg-blue-50': item.quantity == cantidadBase}"
+                    (click)="openDetailDialog(item)"
+                    class="w-full sm:w-auto">
+              <mat-icon class="mr-2">visibility</mat-icon>
+              Detalles
             </button>
-          </mat-card-actions>
+          </div>
         </div>
       </mat-card>
     </div>
   </div>
 </div>
+
+<!-- Estilos adicionales para el componente -->
+<style>
+</style>

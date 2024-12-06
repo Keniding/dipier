@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from "@angular/common";
 import { MatToolbar } from "@angular/material/toolbar";
 import { MatIcon } from "@angular/material/icon";
-import { MatButton } from "@angular/material/button";
+import {MatButton, MatFabButton} from "@angular/material/button";
 import {
   MatCard,
   MatCardActions,
@@ -52,6 +52,7 @@ interface Inventario {
     FormsModule,
     MatInputModule,
     MatInput,
+    MatFabButton,
   ],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css']
@@ -130,7 +131,7 @@ export class InventoryComponent implements OnInit {
   }
 
   addInventory() {
-    this.router.navigate(['/product']).then(success => {
+    this.router.navigate(['/dashboard/products']).then(success => {
       if (success) {
         console.log('Navegación exitosa a /product');
       } else {

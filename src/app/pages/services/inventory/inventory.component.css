@@ -29,3 +29,33 @@
   background-color: #d0e888;
 }
 
+
+.inventory-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.low-stock {
+  border-left: 4px solid #ef4444;
+}
+
+.high-stock {
+  border-left: 4px solid #10b981;
+}
+
+.stock {
+  border-left: 4px solid #3b82f6;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+/* Animaciones suaves */
+.inventory-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.inventory-card:hover {
+  transform: translateY(-2px);
+}

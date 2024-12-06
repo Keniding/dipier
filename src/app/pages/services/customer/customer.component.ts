@@ -81,6 +81,6 @@ export class CustomerComponent implements OnInit {
 
   navigateToCart(customerId: string) {
     this.cartServiceServiceBusiness.setCustomerId(customerId);
-    this.router.navigate(['/cart']).then(r => console.log(r));
+    this.router.navigate(['/dashboard/carts']).then(r => console.log(r));
   }
 }
