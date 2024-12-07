@@ -27,18 +27,17 @@ interface Producto {
 
 @Component({
   selector: 'app-product',
-  standalone: true,
   imports: [
     CommonModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    NgOptimizedImage,
     MatFormFieldModule,
     MatInputModule,
   ],
   templateUrl: './product.component.html',
+  standalone: true,
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit, OnDestroy {

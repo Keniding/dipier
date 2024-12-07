@@ -23,7 +23,6 @@ interface Customer {
 
 @Component({
   selector: 'app-customer',
-  standalone: true,
   imports: [
     MatCard,
     MatCardHeader,
@@ -36,6 +35,7 @@ interface Customer {
     MatToolbar
   ],
   templateUrl: './customer.component.html',
+  standalone: true,
   styleUrl: './customer.component.css'
 })
 

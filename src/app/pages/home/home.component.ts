@@ -6,13 +6,11 @@ import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [
-    RouterLink,
-    MatButton,
     NgClass
   ],
   templateUrl: './home.component.html',
+  standalone: true,
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {

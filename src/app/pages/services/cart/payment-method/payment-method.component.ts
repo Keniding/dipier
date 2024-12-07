@@ -15,9 +15,9 @@ import {EmailRequest, EmailService} from "../../../../services/email.service";
 
 @Component({
   selector: 'app-payment-method',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './payment-method.component.html',
+  standalone: true,
   styleUrls: ['./payment-method.component.css']
 })
 export class PaymentMethodComponent implements OnInit {

@@ -9,16 +9,15 @@ import {MinioService} from "../../../../../services/minio.service";
 import {FormsModule} from "@angular/forms";
 @Component({
   selector: 'app-search',
-  standalone: true,
   imports: [
     NgForOf,
     NgIf,
-    NgClass,
     CurrencyPipe,
     FormsModule,
     FormsModule
   ],
   templateUrl: './search.component.html',
+  standalone: true,
   styleUrl: './search.component.css'
 })
 export class SearchComponent implements OnInit, OnDestroy {

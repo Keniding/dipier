@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: 'login-form.component.html',
+  standalone: true,
   styleUrls: ['login-form.component.css']
 })
 export class LoginFormComponent {

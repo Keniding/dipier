@@ -1,1 +1,159 @@
-<p>report works!</p>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+  <!-- Header con búsqueda y filtros -->
+  <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800">Panel de Analytics</h1>
+      <p class="text-gray-600 mt-1">Bienvenido al panel de control</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+      <div class="relative flex-grow sm:flex-grow-0">
+        <input type="text"
+               class="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+               placeholder="Buscar...">
+        <svg class="w-5 h-5 text-gray-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Cards de estadísticas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Card de Ingresos -->
+    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Ingresos Totales</p>
+          <h3 class="text-2xl font-bold text-gray-900 mt-1">
+            S/{{formatLargeNumber(revenueData.total)}}
+          </h3>
+          <div class="flex items-center mt-2">
+            <span [class]="revenueData.trend === 'up' ? 'text-green-500' : 'text-red-500'"
+                  class="text-sm font-medium">
+              {{formatPercentage(revenueData.percentage)}}
+            </span>
+            <span class="text-gray-600 text-sm ml-1">vs mes anterior</span>
+          </div>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-lg">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de Promedio de Pagos -->
+    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Promedio de Pagos</p>
+          <h3 class="text-2xl font-bold text-gray-900 mt-1">
+            S/{{formatLargeNumber(paymentStats.averageAmount)}}
+          </h3>
+          <div class="flex items-center mt-2">
+            <span class="text-gray-600 text-sm">
+              Total pagos: {{paymentStats.totalCount}}
+            </span>
+          </div>
+        </div>
+        <div class="p-3 bg-purple-50 rounded-lg">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de Mayor Pago -->
+    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Mayor Pago</p>
+          <h3 class="text-2xl font-bold text-gray-900 mt-1">
+            S/{{formatLargeNumber(paymentStats.maxAmount)}}
+          </h3>
+          <div class="flex items-center mt-2">
+            <span class="text-gray-600 text-sm">
+              Este mes
+            </span>
+          </div>
+        </div>
+        <div class="p-3 bg-green-50 rounded-lg">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de Ingresos Año Actual -->
+    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Ingresos Año Actual</p>
+          <h3 class="text-2xl font-bold text-gray-900 mt-1">
+            S/{{formatLargeNumber(revenueData.yearToDate)}}
+          </h3>
+          <div class="flex items-center mt-2">
+            <span class="text-gray-600 text-sm">
+              Acumulado {{getCurrentYear()}}
+            </span>
+          </div>
+        </div>
+        <div class="p-3 bg-yellow-50 rounded-lg">
+          <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Gráfico de Área -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Tendencia de Ingresos</h3>
+      <div class="h-[400px]">
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [stroke]="chartOptions.stroke"
+          [tooltip]="chartOptions.tooltip"
+          [dataLabels]="chartOptions.dataLabels"
+          [fill]="chartOptions.fill">
+        </apx-chart>
+      </div>
+    </div>
+
+    <!-- Gráfico de Dona -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Distribución de Pagos</h3>
+      <div class="h-[400px]">
+        <apx-chart
+          [series]="pieChartOptions.series"
+          [chart]="pieChartOptions.chart"
+          [labels]="pieChartOptions.labels"
+          [colors]="pieChartOptions.colors"
+          [legend]="pieChartOptions.legend"
+          [responsive]="pieChartOptions.responsive">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="loading"
+       class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+</div>

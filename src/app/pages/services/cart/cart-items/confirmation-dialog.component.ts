@@ -3,8 +3,8 @@ import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-confirmation-dialog',
-  standalone: true,
   imports: [NgIf],
+  standalone: true,
   template: `
     <div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">

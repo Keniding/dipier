@@ -24,7 +24,6 @@ import {PaymentMethod, PaymentMethodService} from "../../../../services/payment.
 
 @Component({
   selector: 'app-cart',
-  standalone: true,
   imports: [
     ProgressStepsComponent,
     CartItemsComponent,
@@ -33,10 +32,10 @@ import {PaymentMethod, PaymentMethodService} from "../../../../services/payment.
     ConfirmationComponent,
     RouterLink,
     NgClass,
-
     SearchComponent
   ],
   templateUrl: './cart.component.html',
+  standalone: true,
   styleUrl: './cart.component.css'
 })
 export class CartComponent implements OnInit, OnDestroy {

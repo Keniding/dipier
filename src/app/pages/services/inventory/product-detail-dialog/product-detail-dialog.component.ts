@@ -4,7 +4,6 @@ import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/mat
 
 @Component({
   selector: 'app-product-detail-dialog',
-  standalone: true,
   imports: [
     MatCardContent,
     MatCardTitle,
@@ -12,6 +11,7 @@ import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/mat
     MatCard
   ],
   templateUrl: './product-detail-dialog.component.html',
+  standalone: true,
   styleUrl: './product-detail-dialog.component.css'
 })
 

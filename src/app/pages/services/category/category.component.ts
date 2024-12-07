@@ -12,9 +12,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-category',
-  standalone: true,
   imports: [CommonModule, MatCard, MatCardHeader, MatCardContent, MatCardTitle, MatCardActions, MatButton, MatIcon, MatToolbar],
   templateUrl: './category.component.html',
+  standalone: true,
   styleUrls: ['./category.component.css']
 })
 export class CategoryComponent implements OnInit, OnDestroy {

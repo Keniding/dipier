@@ -7,17 +7,15 @@ import {ConfirmationDialogComponent} from "./confirmation-dialog.component";
 
 @Component({
   selector: 'app-cart-items',
-  standalone: true,
   imports: [
     NgForOf,
     NgIf,
     NgClass,
     CurrencyPipe,
-    NgOptimizedImage,
-
     ConfirmationDialogComponent
   ],
   templateUrl: './cart-items.component.html',
+  standalone: true,
   styleUrl: './cart-items.component.css'
 })
 export class CartItemsComponent implements OnInit, OnDestroy {

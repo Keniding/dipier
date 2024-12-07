@@ -24,7 +24,6 @@ interface Producto {
 @Component({
   selector: 'app-update-product',
   templateUrl: './update-product.component.html',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatFormField,
@@ -39,6 +38,7 @@ interface Producto {
     MatSelectModule,
     NgIf
   ],
+  standalone: true,
   styleUrls: ['./update-product.component.css']
 })
 export class UpdateProductComponent implements OnInit {

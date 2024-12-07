@@ -15,7 +15,6 @@ import { switchMap, map } from 'rxjs/operators';
 @Component({
   selector: 'app-store-product',
   templateUrl: './store-product.component.html',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatFormField,
@@ -30,6 +29,7 @@ import { switchMap, map } from 'rxjs/operators';
     MatSelectModule,
     NgIf
   ],
+  standalone: true,
   styleUrls: ['./store-product.component.css']
 })
 export class StoreProductComponent implements OnInit {

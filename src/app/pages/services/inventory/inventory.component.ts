@@ -37,14 +37,10 @@ interface Inventario {
 
 @Component({
   selector: 'app-inventory',
-  standalone: true,
   imports: [
     CommonModule,
     MatCard,
-    MatCardHeader,
     MatCardContent,
-    MatCardTitle,
-    MatCardActions,
     MatButton,
     MatIcon,
     MatToolbar,
@@ -55,6 +51,7 @@ interface Inventario {
     MatFabButton,
   ],
   templateUrl: './inventory.component.html',
+  standalone: true,
   styleUrls: ['./inventory.component.css']
 })
 

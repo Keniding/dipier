@@ -6,8 +6,8 @@ import {HeaderComponent} from "../header/header.component";
 
 @Component({
   selector: 'app-dashboard',
+  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent],
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, NgOptimizedImage, HeaderComponent],
-  templateUrl: './dashboard-layout.component.html',
+  templateUrl: './dashboard-layout.component.html'
 })
 export class DashboardLayoutComponent {}
