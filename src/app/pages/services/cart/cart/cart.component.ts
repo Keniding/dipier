@@ -334,12 +334,6 @@ export class CartComponent implements OnInit, OnDestroy {
       this.currentStep--;
     }
   }
-
-  confirmPayment(paymentMethod: PaymentMethod): void {
-    console.log('Método de pago seleccionado:', paymentMethod);
-    this.nextStep();
-  }
-
   retryLoad(): void {
     this.error = null;
     if (this.customerId) {
