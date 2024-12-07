@@ -9,6 +9,7 @@ import { CustomerComponent } from "./pages/services/customer/customer.component"
 import { CartComponent } from "./pages/services/cart/cart/cart.component";
 import {DashboardLayoutComponent} from "./dashboard-layout/dashboard-layout.component";
 import {ReportComponent} from "./pages/services/report/report.component";
+import {ChartComponent} from "./pages/services/report/chart/chart.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -21,7 +22,10 @@ export const routes: Routes = [
       { path: 'categories', component: CategoryComponent },
       { path: 'inventory', component: InventoryComponent },
       { path: 'customers', component: CustomerComponent },
+
       { path: 'reports', component: ReportComponent },
+      { path: 'chart', component: ChartComponent },
+
       { path: 'carts', component: CartComponent },
       { path: 'cart/:customerId', component: CartComponent },
     ]
