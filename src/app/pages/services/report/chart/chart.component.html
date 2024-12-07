@@ -1,1 +1,179 @@
-<p>chart works!</p>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header con diseño mejorado -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white shadow-xl">
+      <h2 class="text-3xl font-bold mb-2">Historial de Pagos</h2>
+      <p class="text-blue-100">Analiza y visualiza el historial completo de transacciones</p>
+    </div>
+
+    <!-- Filtros con diseño mejorado -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-calendar-alt mr-2"></i>Rango de Fecha
+          </label>
+          <select
+            [(ngModel)]="filters.dateRange"
+            (change)="applyFilters()"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 transition duration-150 ease-in-out hover:bg-gray-100">
+            <option value="week">Última Semana</option>
+            <option value="month">Último Mes</option>
+            <option value="year">Último Año</option>
+            <option value="all">Todo</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-layer-group mr-2"></i>Agrupar Por
+          </label>
+          <select
+            [(ngModel)]="filters.groupBy"
+            (change)="applyFilters()"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 transition duration-150 ease-in-out hover:bg-gray-100">
+            <option value="day">Día</option>
+            <option value="week">Semana</option>
+            <option value="month">Mes</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-chart-line mr-2"></i>Tipo de Gráfico
+          </label>
+          <select
+            [(ngModel)]="filters.chartType"
+            (change)="applyFilters()"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 transition duration-150 ease-in-out hover:bg-gray-100">
+            <option value="line">Línea</option>
+            <option value="bar">Barras</option>
+            <option value="pie">Circular</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de Datos con diseño mejorado -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-blue-100 rounded-full">
+            <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Total Pagos</h4>
+            <p class="text-2xl font-bold text-gray-900">S/{{summary.total | number:'1.2-2'}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-green-100 rounded-full">
+            <i class="fas fa-chart-line text-green-600 text-xl"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Promedio</h4>
+            <p class="text-2xl font-bold text-gray-900">S/{{summary.average | number:'1.2-2'}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-yellow-100 rounded-full">
+            <i class="fas fa-arrow-up text-yellow-600 text-xl"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Máximo</h4>
+            <p class="text-2xl font-bold text-gray-900">S/{{summary.max | number:'1.2-2'}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-red-100 rounded-full">
+            <i class="fas fa-arrow-down text-red-600 text-xl"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Mínimo</h4>
+            <p class="text-2xl font-bold text-gray-900">S/{{summary.min | number:'1.2-2'}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading state mejorado -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+    </div>
+
+    <!-- Error state mejorado -->
+    <div *ngIf="error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-red-700">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts y Tabla mejorados -->
+    <div *ngIf="!isLoading && !error" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-semibold text-gray-800">{{getChartTitle()}}</h3>
+          <div class="text-gray-500">
+            <i class="fas fa-info-circle hover:text-blue-500 cursor-pointer"></i>
+          </div>
+        </div>
+        <div class="relative" style="height: 400px;">
+          <canvas #mainChart></canvas>
+        </div>
+      </div>
+
+      <!-- Tabla de resumen mejorada -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-semibold text-gray-800">Últimos Pagos</h3>
+          <div class="text-gray-500">
+            <i class="fas fa-sync-alt hover:text-blue-500 cursor-pointer" (click)="loadData()"></i>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">
+                ID Factura
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Monto
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">
+                Fecha
+              </th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let payment of filteredPayments" class="hover:bg-gray-50 transition-colors duration-150">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{payment.invoiceId}}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <span class="font-medium text-green-600">S/{{payment.amount | number:'1.2-2'}}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{payment.paymentDate | date:'medium'}}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
