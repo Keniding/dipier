@@ -21,7 +21,7 @@ export interface PaymentHistoryRequest {
 // models/payment.models.ts
 export interface ChartFilters {
   dateRange: 'day' | 'week' | 'month' | 'year';
-  groupBy: 'hour' | 'day' | 'week' | 'month';
+  groupBy: 'day' | 'week' | 'month';
   chartType: 'line' | 'bar' | 'pie' | 'doughnut';
 }
 

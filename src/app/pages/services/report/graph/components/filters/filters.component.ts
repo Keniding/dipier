@@ -139,7 +139,6 @@ export class PaymentFiltersComponent implements OnInit {
   ];
 
   groupByOptions: FilterOption[] = [
-    { value: 'hour', label: 'Por Hora' },
     { value: 'day', label: 'Por Día' },
     { value: 'week', label: 'Por Semana' },
     { value: 'month', label: 'Por Mes' }
