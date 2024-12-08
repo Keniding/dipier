@@ -19,7 +19,7 @@ interface FilterOption {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Filtro de Rango de Fecha -->
         <div class="space-y-2 relative group">
-          <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+          <label class="text-sm font-medium text-gray-700 flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
             </svg>
@@ -48,7 +48,7 @@ interface FilterOption {
 
         <!-- Filtro de Agrupación -->
         <div class="space-y-2 relative group">
-          <label class="block text-sm font-medium text-gray-700 flex items-center space-x-2">
+          <label class="text-sm font-medium text-gray-700 flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
               <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
             </svg>
