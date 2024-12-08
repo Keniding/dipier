@@ -29,8 +29,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'people', label: 'Clientes', route: '/dashboard/customers' },
     { icon: 'inventory', label: 'Inventario', route: '/dashboard/inventory' },
     { icon: 'inventory_2', label: 'Productos', route: '/dashboard/products' },
-    { icon: 'assessment', label: 'Reportes', route: '/dashboard/chart' },
-      //route: '/dashboard/reports' },
+    { icon: 'assessment', label: 'Reportes', route: '/dashboard/reports' },
     { icon: 'settings', label: 'Configuración', route: '/dashboard/settings' }
   ];
 

@@ -1,0 +1,39 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header -->
+    <app-payment-header></app-payment-header>
+
+    <!-- Filtros -->
+    <app-payment-filters
+      [filters]="filters"
+      (filtersChange)="onFiltersChange($event)">
+    </app-payment-filters>
+
+    <!-- Resumen -->
+    <app-summary-cards
+      [summary]="summary">
+    </app-summary-cards>
+
+    <!-- Loading -->
+    <app-loading *ngIf="isLoading"></app-loading>
+
+    <!-- Error -->
+    <app-error
+      *ngIf="errorMessage"
+      [message]="errorMessage">
+    </app-error>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading && !errorMessage" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <app-payment-chart
+        [payments]="filteredPayments"
+        [filters]="filters">
+      </app-payment-chart>
+
+      <app-payment-table
+        [payments]="filteredPayments"
+        (refresh)="loadData()">
+      </app-payment-table>
+    </div>
+  </div>
+</div>
