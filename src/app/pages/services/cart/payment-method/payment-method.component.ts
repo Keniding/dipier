@@ -12,14 +12,19 @@ import { CommonModule } from '@angular/common';
 import {BillingService} from "../../../../services/invoice.service";
 import {CustomerService} from "../../../../services/customer.service";
 import {EmailRequest, EmailService} from "../../../../services/email.service";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-payment-method',
-  imports: [CommonModule],
-  templateUrl: './payment-method.component.html',
   standalone: true,
+  imports: [
+    CommonModule
+  ],
+  templateUrl: './payment-method.component.html',
   styleUrls: ['./payment-method.component.css']
 })
+
+
 export class PaymentMethodComponent implements OnInit {
   @Input() customerId: string | null = null;
   @Input() paymentMethods: PaymentMethod[] = [];
@@ -56,6 +61,7 @@ export class PaymentMethodComponent implements OnInit {
     this.error = null;
 
     try {
+      const total = Number(this.totalAmount.toFixed(2));
       const invoice = {
         id: '',
         customerId: this.customerId,
@@ -95,12 +101,48 @@ export class PaymentMethodComponent implements OnInit {
               footerText: 'Gracias por su compra'
             };
 
+            // Mostrar loading mientras se envía el email
+            Swal.fire({
+              title: 'Enviando email...',
+              text: 'Por favor espere',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
             this.emailService.sendEmail(emailRequest).subscribe({
-              error: (error) => console.error('Error al enviar email:', error)
+              next: () => {
+                Swal.close(); // Cerrar el loading
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Éxito',
+                  text: 'Email enviado correctamente',
+                  timer: 3000,
+                  showConfirmButton: false
+                });
+              },
+              error: (error) => {
+                Swal.close(); // Cerrar el loading
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'No se pudo enviar el email'
+                });
+              }
             });
           }
         },
-        error: (error) => console.error('Error al obtener datos del cliente:', error)
+        error: (error) => {
+          console.error('Error al obtener datos del cliente:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al obtener datos del cliente'
+          });
+        }
       });
 
       this.paymentProcessed.emit(createdInvoice.id);

@@ -421,10 +421,11 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-  calculateTotal(): number {
-    return this.cartProducts.reduce((total, product) => {
-      return total + (product.price * product.quantity);
+  protected calculateTotal(): number {
+    const sum = this.cartProducts.reduce((acc, product) => {
+      return acc + (product.price * product.quantity);
     }, 0);
+    return Number(sum.toFixed(2));
   }
 
   onPaymentProcessed(invoiceId: string) {
