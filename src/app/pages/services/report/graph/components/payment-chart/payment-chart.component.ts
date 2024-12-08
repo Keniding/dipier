@@ -1,15 +1,17 @@
-// payment-chart.component.ts
-import {Component, Input, OnChanges, SimpleChanges, ViewChild, OnDestroy, ChangeDetectorRef} from '@angular/core';
+// components/payment-chart/payment-chart.component.ts
+import { Component, Input, OnChanges, SimpleChanges, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {BaseChartDirective, NgChartsModule} from 'ng2-charts';
+import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
+import { Subject } from 'rxjs';
 import {ChartFilters, PaymentHistory} from "../../../../../../services/report.service";
+import {ChartService} from "../../../../../../services/chart/chart.service";
 
 @Component({
   selector: 'app-payment-chart',
   standalone: true,
   imports: [CommonModule, NgChartsModule],
-  templateUrl: './payment-chart.component.html',
+  templateUrl: 'payment-chart.component.html'
 })
 export class PaymentChartComponent implements OnChanges, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
@@ -20,133 +22,74 @@ export class PaymentChartComponent implements OnChanges, OnDestroy {
     chartType: 'line'
   };
 
+  loading = false;
   chartData: ChartConfiguration['data'] = {
     datasets: [],
     labels: []
   };
-
-  chartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top'
-      },
-      title: {
-        display: true,
-        text: 'Historial de Pagos'
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Monto (S/)'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Fecha'
-        }
-      }
-    }
-  };
-
+  chartOptions: ChartConfiguration['options'];
   chartType: ChartType = 'line';
+  private destroy$ = new Subject<void>();
+
+  constructor(private chartService: ChartService) {
+    this.chartOptions = this.chartService.getDefaultChartOptions('Historial de Pagos');
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['payments'] || changes['filters']) && this.payments) {
-      setTimeout(() => this.updateChart(), 0);
+      this.updateChartWithAnimation();
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     if (this.chart?.chart) {
       this.chart.chart.destroy();
     }
   }
 
-  private updateChart(): void {
-    if (this.chart?.chart) {
-      this.chart.chart.destroy();
-    }
-
-    const groupedData = this.groupDataByFilter();
-    this.updateChartData(groupedData);
-    this.updateChartType();
-
-    if (this.chart) {
-      this.chart.render();
+  private async updateChartWithAnimation(): Promise<void> {
+    this.loading = true;
+    try {
+      await this.updateChart();
+    } finally {
+      this.loading = false;
     }
   }
 
-  private groupDataByFilter(): Map<string, number> {
-    const groupedData = new Map<string, number>();
-
-    this.payments.forEach(payment => {
-      const date = new Date(payment.paymentDate);
-      let key = '';
-
-      switch (this.filters.groupBy) {
-        case 'day':
-          key = date.toISOString().split('T')[0];
-          break;
-        case 'week':
-          const weekNumber = this.getWeekNumber(date);
-          key = `Semana ${weekNumber}`;
-          break;
-        case 'month':
-          key = date.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-          break;
-      }
-
-      const currentAmount = groupedData.get(key) || 0;
-      groupedData.set(key, currentAmount + payment.amount);
-    });
-
-    return groupedData;
-  }
-
-  private updateChartData(groupedData: Map<string, number>): void {
-    const sortedEntries = Array.from(groupedData.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]));
+  private async updateChart(): Promise<void> {
+    const groupedData = this.chartService.processChartData(this.payments, this.filters);
 
     this.chartData = {
-      labels: sortedEntries.map(([label]) => label),
+      labels: Array.from(groupedData.keys()),
       datasets: [{
-        data: sortedEntries.map(([, value]) => value),
+        data: Array.from(groupedData.values()),
         label: 'Monto de Pagos',
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: this.getBackgroundColor(),
+        borderColor: this.getBorderColor(),
         borderWidth: 2,
         fill: true,
-        tension: 0.4
+        tension: this.filters.chartType === 'line' ? 0.4 : undefined
       }]
     };
-  }
 
-  private updateChartType(): void {
-    switch (this.filters.chartType) {
-      case 'line':
-        this.chartType = 'line';
-        break;
-      case 'bar':
-        this.chartType = 'bar';
-        break;
-      case 'pie':
-        this.chartType = 'pie';
-        break;
-      default:
-        this.chartType = 'line';
+    this.chartType = this.filters.chartType;
+
+    if (this.chart) {
+      await this.chart.render();
     }
   }
 
-  private getWeekNumber(date: Date): number {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  private getBackgroundColor(): string | string[] {
+    return this.filters.chartType === 'pie' || this.filters.chartType === 'doughnut'
+      ? ['#60A5FA', '#34D399', '#F472B6', '#FBBF24', '#A78BFA']
+      : 'rgba(59, 130, 246, 0.2)';
+  }
+
+  private getBorderColor(): string | string[] {
+    return this.filters.chartType === 'pie' || this.filters.chartType === 'doughnut'
+      ? ['#2563EB', '#059669', '#DB2777', '#D97706', '#7C3AED']
+      : 'rgb(59, 130, 246)';
   }
 }

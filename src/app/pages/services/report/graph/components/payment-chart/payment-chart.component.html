@@ -1,10 +1,13 @@
 
 <div class="bg-white rounded-xl shadow-lg p-6 m-2">
-  <div class="h-[400px]">
+  <div class="relative h-[400px]">
     <canvas baseChart
             [data]="chartData"
             [options]="chartOptions"
             [type]="chartType">
     </canvas>
+    <div *ngIf="loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
   </div>
 </div>
