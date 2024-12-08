@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentSummary } from '../../models/payment.models';
+import {PaymentSummary} from "../../../../../../services/report.service";
 
 @Component({
   selector: 'app-summary-cards',

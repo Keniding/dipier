@@ -7,8 +7,7 @@ import {PaymentFiltersComponent} from "./components/filters/filters.component";
 import {LoadingComponent} from "./components/loading/loading.component";
 import {ErrorComponent} from "./components/error/error.component";
 import {PaymentHeaderComponent} from "./components/header/header.component";
-import {PaymentHistory, PaymentHistoryService} from "../../../../services/report.service";
-import {ChartFilters, PaymentSummary} from "./models/payment.models";
+import {ChartFilters, PaymentHistory, PaymentHistoryService, PaymentSummary} from "../../../../services/report.service";
 
 @Component({
   selector: 'app-payment-history',

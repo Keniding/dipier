@@ -13,8 +13,12 @@ import {
   Filler,
   LineController,
   BarController,
-  PieController
+  PieController,
+  DoughnutController,
+  TimeScale,
+  TimeSeriesScale
 } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 
 Chart.register(
   CategoryScale,
@@ -29,5 +33,8 @@ Chart.register(
   Filler,
   LineController,
   BarController,
-  PieController
+  PieController,
+  DoughnutController,
+  TimeScale,
+  TimeSeriesScale
 );

@@ -1,25 +1,15 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild, OnDestroy } from '@angular/core';
+// payment-chart.component.ts
+import {Component, Input, OnChanges, SimpleChanges, ViewChild, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
+import {BaseChartDirective, NgChartsModule} from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
-import { PaymentHistory } from "../../../../../../services/report.service";
-import { ChartFilters } from "../../models/payment.models";
+import {ChartFilters, PaymentHistory} from "../../../../../../services/report.service";
 
 @Component({
   selector: 'app-payment-chart',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
-  template: `
-    <div class="bg-white rounded-xl shadow-lg p-6 m-2">
-      <div class="h-[400px]">
-        <canvas baseChart
-                [data]="chartData"
-                [options]="chartOptions"
-                [type]="chartType">
-        </canvas>
-      </div>
-    </div>
-  `
+  imports: [CommonModule, NgChartsModule],
+  templateUrl: './payment-chart.component.html',
 })
 export class PaymentChartComponent implements OnChanges, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;

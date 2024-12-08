@@ -1,3 +1,4 @@
+/*
 export interface PaymentHistory {
   invoiceId: string;
   amount: number;
@@ -16,3 +17,5 @@ export interface PaymentSummary {
   max: number;
   min: number;
 }
+
+ */

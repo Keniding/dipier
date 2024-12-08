@@ -18,6 +18,34 @@ export interface PaymentHistoryRequest {
   paymentDate: string;
 }
 
+// models/payment.models.ts
+export interface ChartFilters {
+  dateRange: 'day' | 'week' | 'month' | 'year';
+  groupBy: 'hour' | 'day' | 'week' | 'month';
+  chartType: 'line' | 'bar' | 'pie' | 'doughnut';
+}
+
+export interface PaymentSummary {
+  total: number;
+  average: number;
+  max: number;
+  min: number;
+}
+
+export interface PaymentStats {
+  total: number;
+  average: number;
+  max: number;
+  min: number;
+  trend: 'up' | 'down' | 'stable';
+  percentageChange: number;
+}
+
+export interface ChartDataPoint {
+  date: string;
+  amount: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })

@@ -9,7 +9,20 @@ export default defineConfig({
     target: 'es2020',
   },
   optimizeDeps: {
-    include: ['chart.js']
+    include: [
+      'chart.js',
+      'chartjs-adapter-date-fns',
+      'date-fns'
+    ]
+  },
+  ssr: {
+    optimizeDeps: {
+      include: [
+        'chart.js',
+        'chartjs-adapter-date-fns',
+        'date-fns'
+      ]
+    }
   },
   resolve: {
     alias: {
