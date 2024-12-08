@@ -1,4 +1,3 @@
-// services/chart.service.ts
 import { Injectable } from '@angular/core';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { ChartFilters, PaymentHistory } from "../report.service";
@@ -44,6 +43,9 @@ export class ChartService {
           }
         },
         tooltip: {
+          callbacks: {
+            label: (context) => `S/ ${context.parsed.y.toFixed(2)}`
+          },
           mode: 'index',
           intersect: false,
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -90,28 +92,38 @@ export class ChartService {
     const now = new Date();
     let startDate: Date;
 
+    // Normalizar la fecha actual al inicio del día
+    now.setHours(0, 0, 0, 0);
+
     switch (filters.dateRange) {
       case 'day':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        startDate = new Date(now);
         break;
       case 'week':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 7);
         break;
       case 'month':
-        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        startDate = new Date(now);
+        startDate.setMonth(startDate.getMonth() - 1);
         break;
       case 'year':
-        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        startDate = new Date(now);
+        startDate.setFullYear(startDate.getFullYear() - 1);
         break;
       default:
         startDate = new Date(0);
     }
 
+    // Normalizar startDate al inicio del día
+    startDate.setHours(0, 0, 0, 0);
+
     const filteredPayments = payments.filter(payment =>
       new Date(payment.paymentDate) >= startDate
     );
 
-    this.initializeEmptyPeriods(groupedData, startDate, now, filters.groupBy);
+    const dateMap = new Map<string, Date>();
+    this.initializeEmptyPeriods(groupedData, startDate, now, filters.groupBy, dateMap);
 
     filteredPayments.forEach(payment => {
       const date = new Date(payment.paymentDate);
@@ -119,14 +131,20 @@ export class ChartService {
       groupedData.set(key, (groupedData.get(key) || 0) + payment.amount);
     });
 
-    return new Map([...groupedData.entries()].sort());
+    // Ordenar usando las fechas originales
+    return new Map([...groupedData.entries()].sort((a, b) => {
+      const dateA = dateMap.get(a[0]) || new Date(0);
+      const dateB = dateMap.get(b[0]) || new Date(0);
+      return dateA.getTime() - dateB.getTime();
+    }));
   }
 
   private initializeEmptyPeriods(
     groupedData: Map<string, number>,
     startDate: Date,
     endDate: Date,
-    groupBy: string
+    groupBy: string,
+    dateMap: Map<string, Date>
   ): void {
     const current = new Date(startDate);
 
@@ -134,48 +152,85 @@ export class ChartService {
       const key = this.getGroupKey(current, groupBy);
       if (!groupedData.has(key)) {
         groupedData.set(key, 0);
+        dateMap.set(key, new Date(current)); // Guardar la fecha original para ordenamiento
       }
 
+      const nextDate = new Date(current);
       switch (groupBy) {
         case 'hour':
-          current.setHours(current.getHours() + 1);
+          nextDate.setHours(current.getHours() + 1);
           break;
         case 'day':
-          current.setDate(current.getDate() + 1);
+          nextDate.setDate(current.getDate() + 1);
           break;
         case 'week':
-          current.setDate(current.getDate() + 7);
+          nextDate.setDate(current.getDate() + 7);
           break;
         case 'month':
-          current.setMonth(current.getMonth() + 1);
+          nextDate.setMonth(current.getMonth() + 1);
           break;
       }
+      current.setTime(nextDate.getTime());
     }
   }
 
   private getGroupKey(date: Date, groupBy: string): string {
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      hour: groupBy === 'hour' ? '2-digit' : undefined,
-      minute: groupBy === 'hour' ? '2-digit' : undefined,
-      day: ['day', 'hour'].includes(groupBy) ? '2-digit' : undefined,
-      month: ['day', 'week', 'month', 'hour'].includes(groupBy) ? 'short' : undefined,
-      year: 'numeric',
-      weekday: groupBy === 'week' ? 'short' : undefined
+    // Asegurarnos de trabajar con una copia de la fecha
+    const workingDate = new Date(date);
+
+    const formatDateRange = (start: Date, end: Date): string => {
+      const formatDay = (d: Date) => {
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = new Intl.DateTimeFormat('es-ES', { month: 'short' }).format(d);
+        return `${day} ${month}`;
+      };
+
+      const weekNumber = this.getWeekNumber(start);
+      return `Sem ${weekNumber}: ${formatDay(start)}-${formatDay(end)}`;
     };
 
-    let formatted = new Intl.DateTimeFormat('es-ES', formatOptions).format(date);
-
     switch (groupBy) {
-      case 'hour':
-        return formatted;
-      case 'day':
-        return formatted;
-      case 'week':
-        return `Semana ${this.getWeekNumber(date)} - ${date.getFullYear()}`;
-      case 'month':
-        return formatted.split(' de ').join(' ');
-      default:
-        return formatted;
+      case 'hour': {
+        const formatter = new Intl.DateTimeFormat('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          day: '2-digit',
+          month: 'short'
+        });
+        return formatter.format(workingDate);
+      }
+
+      case 'day': {
+        const formatter = new Intl.DateTimeFormat('es-ES', {
+          day: '2-digit',
+          month: 'short'
+        });
+        return formatter.format(workingDate);
+      }
+
+      case 'week': {
+        const weekStart = new Date(workingDate);
+        const weekEnd = new Date(workingDate);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return formatDateRange(weekStart, weekEnd);
+      }
+
+      case 'month': {
+        const formatter = new Intl.DateTimeFormat('es-ES', {
+          month: 'long',
+          year: 'numeric'
+        });
+        return formatter.format(workingDate).replace(' de ', ' ');
+      }
+
+      default: {
+        const formatter = new Intl.DateTimeFormat('es-ES', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+        return formatter.format(workingDate);
+      }
     }
   }
 
