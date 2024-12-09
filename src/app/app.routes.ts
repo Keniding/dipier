@@ -9,6 +9,7 @@ import { CustomerComponent } from "./pages/services/customer/customer.component"
 import { CartComponent } from "./pages/services/cart/cart/cart.component";
 import {DashboardLayoutComponent} from "./dashboard-layout/dashboard-layout.component";
 import {PaymentHistoryComponent} from "./pages/services/report/graph/payment-history.component";
+import {UserComponent} from "./pages/services/configuration/user/user.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -28,6 +29,7 @@ export const routes: Routes = [
 
       { path: 'carts', component: CartComponent },
       { path: 'cart/:customerId', component: CartComponent },
+      { path: 'settings', component: UserComponent }
     ]
   },
   { path: 'home', component: HomeComponent },

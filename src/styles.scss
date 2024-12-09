@@ -31,3 +31,33 @@ body {
   background-color: #fafafa;
   color: #000000;
 }
+
+// styles.scss
+.delete-dialog-backdrop {
+  @apply backdrop-blur-sm bg-black/40;
+}
+
+::ng-deep .delete-dialog-container {
+  background: transparent !important;
+
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+  }
+
+  .mdc-dialog__surface {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+  }
+}
+
+::ng-deep .mdc-dialog__container {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  background: transparent !important;
+}

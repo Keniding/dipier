@@ -1,0 +1,51 @@
+<div class="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl transform transition-all">
+  <!-- Header con gradiente -->
+  <div class="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-t-xl p-6 relative">
+    <button
+      type="button"
+      class="absolute right-4 top-4 rounded-full p-1.5 bg-black/5 hover:bg-black/10 transition-colors"
+      (click)="onNoClick()">
+      <mat-icon class="text-gray-600">close</mat-icon>
+    </button>
+
+    <div class="flex items-start space-x-4">
+      <div class="flex-shrink-0 bg-gradient-to-br from-red-500 to-orange-500 rounded-full p-3 shadow-lg">
+        <mat-icon class="text-white">warning</mat-icon>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-bold text-gray-900">
+          Eliminar Usuario
+        </h3>
+        <p class="mt-2 text-gray-600">
+          ¿Estás seguro que deseas eliminar a <span class="font-semibold">{{data.username}}</span>?
+          <br>Esta acción no se puede deshacer.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer con botones -->
+  <div class="px-6 py-4 bg-gray-50/50 rounded-b-xl flex flex-col sm:flex-row-reverse gap-2">
+    <button
+      type="button"
+      class="inline-flex justify-center items-center px-4 py-2.5 rounded-lg
+                 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400
+                 text-white font-medium shadow-lg shadow-red-500/30
+                 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+      (click)="onYesClick()">
+      <mat-icon class="mr-1.5 text-sm">delete</mat-icon>
+      Eliminar
+    </button>
+
+    <button
+      type="button"
+      class="inline-flex justify-center items-center px-4 py-2.5 rounded-lg
+                 bg-white hover:bg-gray-50 text-gray-700 font-medium
+                 border border-gray-200 shadow-sm
+                 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+      (click)="onNoClick()">
+      Cancelar
+    </button>
+  </div>
+</div>
