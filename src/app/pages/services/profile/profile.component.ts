@@ -6,13 +6,16 @@ import { User, UserRequest, UserService } from '../../../services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import {FooterComponent} from "../../../common/footer/footer.component";
+import {AuthService} from "../../../login/auth/auth.service";
+import {Router} from "@angular/router";
+import {HeaderComponent} from "../../../common/header/header.component";
 
 type UserRole = 'user' | 'admin';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, FooterComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, FooterComponent, HeaderComponent],
   templateUrl: './profile.component.html',
   styles: [`
     .profile-container {
@@ -40,7 +43,9 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router
   ) {
     this.profileForm = this.fb.group({
       username: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(3)]],
@@ -51,7 +56,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private getUsername(): string {
-    const token = localStorage.getItem('token');
+    const token = this.authService.getToken();
     if (token) {
       const decodedToken = this.jwtHelper.decodeToken(token);
       return decodedToken.sub;
@@ -173,4 +178,14 @@ export class ProfileComponent implements OnInit {
 
     return roleClasses[this.user.role as UserRole] || 'bg-gray-100 text-gray-800';
   }
+
+  async logout() {
+    try {
+      this.authService.logout();
+      await this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error durante el logout:', error);
+    }
+  }
+
 }
