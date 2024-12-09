@@ -1,15 +1,18 @@
-// user.component.ts
-import { Component, OnInit } from '@angular/core';
-import {User, UserRequest, UserService} from "../../../../services/user.service";
+import { User, UserRequest, UserService } from "../../../../services/user.service";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {UserFormComponent} from "./user-form/user-form.component";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {DeleteConfirmationDialogComponent} from "./delete-confirmation-dialog/delete-confirmation-dialog.component";
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UserFormComponent } from "./user-form/user-form.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { DeleteConfirmationDialogComponent } from "./delete-confirmation-dialog/delete-confirmation-dialog.component";
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, Inject } from '@angular/core';
+import {fadeAnimation, itemAnimation, listAnimation} from "../../../../../../animations";
 
 @Component({
   selector: 'app-user',
@@ -22,23 +25,46 @@ import {DeleteConfirmationDialogComponent} from "./delete-confirmation-dialog/de
     MatTooltipModule,
     MatDialogModule
   ],
-  templateUrl: './user.component.html'
+  templateUrl: './user.component.html',
+  animations: [fadeAnimation, listAnimation, itemAnimation]
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
+  isBrowser: boolean;
+
   users: User[] = [];
   loading: boolean = false;
   searchTerm: string = '';
   viewMode: 'grid' | 'list' = 'grid';
   selectedFilter: 'all' | 'active' | 'inactive' = 'all';
 
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+
   constructor(
     private userService: UserService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.filterUsers();
+      });
+  }
 
   ngOnInit() {
     this.obtenerUsers();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   obtenerUsers() {
@@ -51,17 +77,29 @@ export class UserComponent implements OnInit {
       error: (error) => {
         console.error('Error al cargar usuarios:', error);
         this.loading = false;
+        this.showNotification('Error al cargar usuarios', true);
       }
     });
   }
 
+  // Método para manejar cambios en la búsqueda
+  onSearchChange(term: string) {
+    this.searchTerm = term;
+    this.searchSubject.next(term);
+  }
+
   filterUsers(): User[] {
     return this.users.filter(user => {
-      const matchesSearch = user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const searchTerm = this.searchTerm.toLowerCase().trim();
+      const matchesSearch = searchTerm === '' ||
+        user.username.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm) ||
+        user.role.toLowerCase().includes(searchTerm);
+
       const matchesFilter = this.selectedFilter === 'all' ? true :
         this.selectedFilter === 'active' ? user.active :
           !user.active;
+
       return matchesSearch && matchesFilter;
     });
   }
@@ -113,7 +151,9 @@ export class UserComponent implements OnInit {
   openUserForm(user?: User) {
     const dialogRef = this.dialog.open(UserFormComponent, {
       width: '500px',
-      data: { user }
+      maxWidth: '95vw',
+      data: { user },
+      panelClass: ['user-form-dialog']
     });
 
     dialogRef.afterClosed().subscribe((result: UserRequest | undefined) => {
@@ -159,6 +199,13 @@ export class UserComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.selectedFilter = 'all';
+    this.searchSubject.next('');
+    this.showNotification('Filtros limpiados');
   }
 
   private showNotification(message: string, isError: boolean = false) {
