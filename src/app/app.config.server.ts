@@ -7,7 +7,7 @@ import {provideAnimationsAsync} from "@angular/platform-browser/animations/async
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(),
-    provideAnimationsAsync(),
+    //provideAnimationsAsync(),
     provideHttpClient(withFetch())
   ]
 };

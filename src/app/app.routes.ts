@@ -10,6 +10,8 @@ import { CartComponent } from "./pages/services/cart/cart/cart.component";
 import {DashboardLayoutComponent} from "./dashboard-layout/dashboard-layout.component";
 import {PaymentHistoryComponent} from "./pages/services/report/graph/payment-history.component";
 import {UserComponent} from "./pages/services/configuration/user/user.component";
+import {ConfirmDialogComponent} from "./pages/services/customer/confirm-dialog/confirm-dialog.component";
+import {CustomerFormComponent} from "./pages/services/customer/customer-form/customer-form.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -23,7 +25,14 @@ export const routes: Routes = [
       { path: 'products', component: ProductComponent },
       { path: 'categories', component: CategoryComponent },
       { path: 'inventory', component: InventoryComponent },
-      { path: 'customers', component: CustomerComponent },
+      {
+        path: 'customers',
+        children: [
+          { path: '', component: CustomerComponent },
+          { path: 'new', component: CustomerFormComponent },
+          { path: 'edit/:id', component: CustomerFormComponent }
+        ]
+      },
 
       { path: 'reports', component: PaymentHistoryComponent },
 

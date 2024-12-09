@@ -10,7 +10,7 @@ export interface Customer {
   lastName: string;
   email: string;
   phoneNumber: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   address: string;
   allergies: string[];
   chronicConditions: string[];
@@ -22,7 +22,7 @@ export interface CustomerRequest {
   lastName: string;
   email: string;
   phoneNumber: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   address: string;
   allergies: string[];
   chronicConditions: string[];

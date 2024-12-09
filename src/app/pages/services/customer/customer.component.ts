@@ -7,13 +7,14 @@ import {MatToolbar} from "@angular/material/toolbar";
 import {Router} from "@angular/router";
 import {CartServiceServiceBusiness} from "../../../services/business/cart-service-business.service";
 import {BasicCustomer, Customer, CustomerService} from "../../../services/customer.service";
+import {MatDialog} from "@angular/material/dialog";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-customer',
   imports: [
     MatCard,
-    MatCardHeader,
-    MatCardContent,
     NgForOf,
     MatCardModule,
     DatePipe,
@@ -27,20 +28,24 @@ import {BasicCustomer, Customer, CustomerService} from "../../../services/custom
 })
 export class CustomerComponent implements OnInit {
   public customers: Customer[] = [];
+  public loading = false;
 
   constructor(
     private customerService: CustomerService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private cartServiceServiceBusiness: CartServiceServiceBusiness
+    private cartServiceServiceBusiness: CartServiceServiceBusiness,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
   }
 
   ngOnInit(): void {
-    this.loadCustomers()
+    this.loadCustomers();
   }
 
   loadCustomers() {
+    this.loading = true;
     const fullDetails = true;
 
     if (isPlatformBrowser(this.platformId)) {
@@ -59,23 +64,46 @@ export class CustomerComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al cargar los datos:', error);
+          this.showError('Error al cargar los clientes');
         },
         complete: () => {
           console.log('Carga de datos completada');
+          this.loading = false;
         }
       });
     } else {
       console.error('La carga de datos no está disponible en este entorno');
+      this.loading = false;
     }
-  }
-
-  // Helper method to check if customer is full Customer type
-  isFullCustomer(customer: Customer): customer is Customer {
-    return 'email' in customer && 'dateOfBirth' in customer;
   }
 
   agregarCustomer() {
     this.router.navigate(['/dashboard/customers/new']);
+  }
+
+  editCustomer(id: string) {
+    this.router.navigate([`/dashboard/customers/edit/${id}`]);
+  }
+
+  deleteCustomer(id: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: '¿Está seguro que desea eliminar este cliente?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.customerService.deleteCustomer(id).subscribe({
+          next: () => {
+            this.showSuccess('Cliente eliminado correctamente');
+            this.loadCustomers();
+          },
+          error: (error) => {
+            console.error('Error al eliminar el cliente:', error);
+            this.showError('Error al eliminar el cliente');
+          }
+        });
+      }
+    });
   }
 
   navigateToCart(customerId: string) {
@@ -83,7 +111,21 @@ export class CustomerComponent implements OnInit {
     this.router.navigate(['/dashboard/carts']).then(r => console.log(r));
   }
 
-  getEmail(customer: Customer): string {
-    return this.isFullCustomer(customer) ? customer.email : 'No disponible';
+  private showSuccess(message: string) {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private showError(message: string) {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['error-snackbar']
+    });
   }
 }
