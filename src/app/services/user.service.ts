@@ -44,6 +44,11 @@ export class UserService extends BaseApiService {
     return this.http.get<User>(`${this.apiUrl}/${userId}`, { headers });
   }
 
+  getUserForName(username: string): Observable<User> {
+    const headers = this.createHeaders();
+    return this.http.get<User>(`${this.apiUrl}/${username}/name`, { headers });
+  }
+
   storeUser(userRequest: UserRequest): Observable<User> {
     const headers = this.createHeaders();
     return this.http.post<User>(`${this.apiUrl}`, userRequest, { headers });

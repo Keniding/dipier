@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {Router, Routes} from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -9,4 +10,14 @@ import { Component } from '@angular/core';
 })
 export class HeaderComponent {
 
+  constructor(
+    private router: Router
+  ) {
+  }
+
+  miPerfil() {
+    this.router.navigate(['/mi-perfil']).then(r =>
+       console.log(r),
+    )
+  }
 }
