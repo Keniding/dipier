@@ -5,11 +5,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User, UserRequest, UserService } from '../../../services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import {FooterComponent} from "../../../common/footer/footer.component";
+
+type UserRole = 'user' | 'admin';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, FooterComponent],
   templateUrl: './profile.component.html',
   styles: [`
     .profile-container {
@@ -158,5 +161,16 @@ export class ProfileComponent implements OnInit {
       'MANAGER': 'Gerente'
     };
     return this.user?.role ? (roleMap[this.user.role] || this.user.role) : '';
+  }
+
+  getRoleClass(): string {
+    if (!this.user?.role) return '';
+
+    const roleClasses: Record<UserRole, string> = {
+      'admin': 'bg-purple-100 text-purple-800',
+      'user': 'bg-blue-100 text-blue-800'
+    };
+
+    return roleClasses[this.user.role as UserRole] || 'bg-gray-100 text-gray-800';
   }
 }
