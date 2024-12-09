@@ -10,7 +10,6 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
     <mat-card *ngFor="let customer of customers" class="shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white rounded-lg">
-      <!-- Card Header -->
       <mat-card-header class="bg-blue-400 text-white rounded-t-lg p-4">
         <div mat-card-avatar class="bg-white rounded-full p-2">
           <mat-icon class="text-blue-600">person</mat-icon>
@@ -21,7 +20,6 @@
         </div>
       </mat-card-header>
 
-      <!-- Card Content -->
       <mat-card-content class="text-gray-700 space-y-3 p-4 m-3">
         <p class="flex items-center">
           <mat-icon class="text-blue-500 mr-2">phone</mat-icon>
@@ -49,7 +47,6 @@
         </p>
       </mat-card-content>
 
-      <!-- Card Actions -->
       <mat-card-actions class="flex justify-end p-4">
         <button mat-button class="bg-blue-500 text-white hover:bg-blue-600 transition-colors rounded-full px-4 py-2">
           Más Información
@@ -64,5 +61,4 @@
       </mat-card-actions>
     </mat-card>
   </div>
-
 </div>

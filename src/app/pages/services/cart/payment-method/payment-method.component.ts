@@ -10,7 +10,7 @@ import {
 } from '../../../../services/payment.service';
 import { CommonModule } from '@angular/common';
 import {BillingService} from "../../../../services/invoice.service";
-import {CustomerService} from "../../../../services/customer.service";
+import {BasicCustomer, Customer, CustomerService} from "../../../../services/customer.service";
 import {EmailRequest, EmailService} from "../../../../services/email.service";
 import Swal from 'sweetalert2';
 
@@ -89,49 +89,58 @@ export class PaymentMethodComponent implements OnInit {
       // Obtener los datos del cliente
       this.customerService.getCustomers(true).subscribe({
         next: (customers) => {
-          const customer = customers.find(c => c.id === this.customerId);
-          if (customer) {
-            const emailRequest: EmailRequest = {
-              to: customer.email,
-              subject: `Confirmación de Pago - Factura #${createdInvoice.id}`,
-              body: `Se ha procesado su pago por $${this.totalAmount}`,
-              recipientName: `${customer.firstName} ${customer.lastName}`,
-              buttonText: 'Ver Factura',
-              buttonUrl: `/invoices/${createdInvoice.id}`,
-              footerText: 'Gracias por su compra'
-            };
+          if (this.isFullCustomerArray(customers)) {
+            const customer = customers.find(c => c.id === this.customerId);
+            if (customer) {
+              const emailRequest: EmailRequest = {
+                to: customer.email,
+                subject: `Confirmación de Pago - Factura #${createdInvoice.id}`,
+                body: `Se ha procesado su pago por $${this.totalAmount}`,
+                recipientName: `${customer.firstName} ${customer.lastName}`,
+                buttonText: 'Ver Factura',
+                buttonUrl: `/invoices/${createdInvoice.id}`,
+                footerText: 'Gracias por su compra'
+              };
 
-            // Mostrar loading mientras se envía el email
+              // Mostrar loading mientras se envía el email
+              Swal.fire({
+                title: 'Enviando email...',
+                text: 'Por favor espere',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                }
+              });
+
+              this.emailService.sendEmail(emailRequest).subscribe({
+                next: () => {
+                  Swal.close(); // Cerrar el loading
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Email enviado correctamente',
+                    timer: 3000,
+                    showConfirmButton: false
+                  });
+                },
+                error: (error) => {
+                  Swal.close(); // Cerrar el loading
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo enviar el email'
+                  });
+                }
+              });
+            }
+          } else {
+            console.error('No se obtuvieron los detalles completos del cliente');
             Swal.fire({
-              title: 'Enviando email...',
-              text: 'Por favor espere',
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-
-            this.emailService.sendEmail(emailRequest).subscribe({
-              next: () => {
-                Swal.close(); // Cerrar el loading
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Éxito',
-                  text: 'Email enviado correctamente',
-                  timer: 3000,
-                  showConfirmButton: false
-                });
-              },
-              error: (error) => {
-                Swal.close(); // Cerrar el loading
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'No se pudo enviar el email'
-                });
-              }
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudieron obtener los detalles completos del cliente'
             });
           }
         },
@@ -154,6 +163,18 @@ export class PaymentMethodComponent implements OnInit {
     } finally {
       this.processingPayment = false;
     }
+  }
+
+  private isFullCustomerArray(customers: Customer[] | BasicCustomer[]): customers is Customer[] {
+    return customers.length === 0 || 'email' in customers[0];
+  }
+
+  private isFullCustomer(customer: Customer | BasicCustomer): customer is Customer {
+    return 'email' in customer;
+  }
+
+  getEmail(customer: Customer | BasicCustomer): string {
+    return this.isFullCustomer(customer) ? customer.email : 'No disponible';
   }
 
   loadPaymentMethods() {
