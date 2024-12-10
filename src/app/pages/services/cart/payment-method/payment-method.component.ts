@@ -13,6 +13,7 @@ import {BillingService} from "../../../../services/invoice.service";
 import {BasicCustomer, Customer, CustomerService} from "../../../../services/customer.service";
 import {EmailRequest, EmailService} from "../../../../services/email.service";
 import Swal from 'sweetalert2';
+import {CartService} from "../../../../services/cart.service";
 
 @Component({
   selector: 'app-payment-method',
@@ -44,7 +45,8 @@ export class PaymentMethodComponent implements OnInit {
     private paymentMethodService: PaymentMethodService,
     private billingService: BillingService,
     private emailService: EmailService,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -124,6 +126,14 @@ export class PaymentMethodComponent implements OnInit {
                     timer: 3000,
                     showConfirmButton: false
                   });
+
+                  this.cartService.clearCart(this.customerId!).subscribe({
+                    next: () => {
+                    },
+                    error: (error) => {
+                      alert("Error al limpiar el carrito")
+                    }
+                  });
                 },
                 error: (error) => {
                   Swal.close(); // Cerrar el loading
@@ -171,10 +181,6 @@ export class PaymentMethodComponent implements OnInit {
 
   private isFullCustomer(customer: Customer | BasicCustomer): customer is Customer {
     return 'email' in customer;
-  }
-
-  getEmail(customer: Customer | BasicCustomer): string {
-    return this.isFullCustomer(customer) ? customer.email : 'No disponible';
   }
 
   loadPaymentMethods() {
