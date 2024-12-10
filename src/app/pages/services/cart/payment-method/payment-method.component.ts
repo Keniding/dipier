@@ -72,21 +72,23 @@ export class PaymentMethodComponent implements OnInit {
         paymentDate: new Date().toISOString()
       };
 
+      // Crear factura inicial
       const createdInvoice = await this.billingService.createInvoice(invoice).toPromise();
 
       if (!createdInvoice) {
         throw new Error('Error al crear la factura');
       }
 
+      console.log("Factura creada: ", createdInvoice);
+
+      // Procesar el pago
       await this.billingService.processInvoice(this.customerId).toPromise();
 
-      const updatedInvoice = {
-        ...createdInvoice,
-        status: 'COMPLETED',
-        paymentDate: new Date().toISOString()
-      };
+      // Esperar un poco para que el backend procese
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      await this.billingService.updateInvoice(updatedInvoice).toPromise();
+      // Obtener la factura actualizada
+      const updatedInvoice = await this.billingService.getInvoice(createdInvoice.id).toPromise();
 
       // Obtener los datos del cliente
       this.customerService.getCustomers(true).subscribe({
@@ -127,20 +129,29 @@ export class PaymentMethodComponent implements OnInit {
                     showConfirmButton: false
                   });
 
+                  // Limpiar el carrito
                   this.cartService.clearCart(this.customerId!).subscribe({
                     next: () => {
+                      console.log('Carrito limpiado correctamente');
                     },
                     error: (error) => {
-                      alert("Error al limpiar el carrito")
+                      console.error('Error al limpiar el carrito:', error);
+                      Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'Error al limpiar el carrito'
+                      });
                     }
                   });
+                  
                 },
                 error: (error) => {
+                  console.error('Error al enviar el email:', error);
                   Swal.close(); // Cerrar el loading
                   Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'No se pudo enviar el email'
+                    text: 'No se pudo enviar el email de confirmación'
                   });
                 }
               });
@@ -164,12 +175,18 @@ export class PaymentMethodComponent implements OnInit {
         }
       });
 
+      // Emitir eventos de finalización
       this.paymentProcessed.emit(createdInvoice.id);
       this.confirmPaymentEvent.emit();
 
     } catch (error) {
       console.error('Error en el proceso de pago:', error);
       this.error = 'Error al procesar el pago. Por favor, intente nuevamente.';
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al procesar el pago. Por favor, intente nuevamente.'
+      });
     } finally {
       this.processingPayment = false;
     }

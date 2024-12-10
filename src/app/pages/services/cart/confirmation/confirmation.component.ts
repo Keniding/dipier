@@ -1,6 +1,6 @@
-// confirmation.component.ts
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {DownloadService} from "../../../../services/download.service";
 
 @Component({
   selector: 'app-confirmation',
@@ -14,7 +14,29 @@ export class ConfirmationComponent {
   @Input() totalAmount: number = 0;
   @Output() prevStepEvent = new EventEmitter<void>();
 
+  constructor(private downloadService: DownloadService) {}
+
   onPrevStep(): void {
     this.prevStepEvent.emit();
+  }
+
+  downloadInvoice(): void {
+    if (this.invoiceId) {
+      this.downloadService.downloadInvoice(this.invoiceId).subscribe(
+        blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `factura-${this.invoiceId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        },
+        error => {
+          console.error('Error al descargar la factura:', error);
+        }
+      );
+    }
   }
 }
