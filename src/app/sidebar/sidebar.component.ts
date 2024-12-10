@@ -23,7 +23,7 @@ export class SidebarComponent implements OnInit {
   isMobile = false;
 
   menuItems: MenuItem[] = [
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard/home' },
+    //{ icon: 'dashboard', label: 'Dashboard', route: '/dashboard/home' },
     { icon: 'shopping_cart', label: 'Carritos', route: '/dashboard/carts' },
     { icon: 'category', label: 'Categorías', route: '/dashboard/categories' },
     { icon: 'people', label: 'Clientes', route: '/dashboard/customers' },

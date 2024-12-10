@@ -61,48 +61,45 @@
   </div>
 
   <!-- Paginación -->
-  <div *ngIf="payments.length > 0" class="mt-6 flex items-center justify-between border-t border-gray-200 pt-4">
-    <div class="flex items-center text-sm text-gray-500">
-      Mostrando {{(currentPage - 1) * pageSize + 1}} - {{Math.min(currentPage * pageSize, payments.length)}} de {{payments.length}}
-    </div>
+  <div class="flex items-center space-x-1">
+    <!-- Botón anterior -->
+    <button
+      (click)="previousPage()"
+      [disabled]="currentPage === 1"
+      class="px-3 py-1 rounded-md text-sm font-medium"
+      [class.text-gray-300]="currentPage === 1"
+      [class.text-gray-700]="currentPage !== 1"
+      [class.hover:bg-gray-50]="currentPage !== 1">
+      <i class="fas fa-chevron-left"></i>
+    </button>
 
-    <div class="flex items-center space-x-2">
-      <!-- Botón anterior -->
-      <button
-        (click)="previousPage()"
-        [disabled]="currentPage === 1"
-        class="px-3 py-1 rounded-md text-sm font-medium"
-        [class.text-gray-300]="currentPage === 1"
-        [class.text-gray-700]="currentPage !== 1"
-        [class.hover:bg-gray-50]="currentPage !== 1">
-        <i class="fas fa-chevron-left"></i>
-      </button>
+    <!-- Números de página -->
+    <ng-container *ngFor="let page of getVisiblePages()">
+      <ng-container *ngIf="page === -1; else pageButton">
+        <span class="px-2 text-gray-500">...</span>
+      </ng-container>
+      <ng-template #pageButton>
+        <button
+          (click)="goToPage(page)"
+          class="px-3 py-1 rounded-md text-sm font-medium"
+          [class.bg-blue-50]="currentPage === page"
+          [class.text-blue-600]="currentPage === page"
+          [class.text-gray-700]="currentPage !== page"
+          [class.hover:bg-gray-50]="currentPage !== page">
+          {{page}}
+        </button>
+      </ng-template>
+    </ng-container>
 
-      <!-- Números de página -->
-      <div class="flex items-center space-x-1">
-        <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
-          <button
-            (click)="goToPage(i + 1)"
-            class="px-3 py-1 rounded-md text-sm font-medium"
-            [class.bg-blue-50]="currentPage === i + 1"
-            [class.text-blue-600]="currentPage === i + 1"
-            [class.text-gray-700]="currentPage !== i + 1"
-            [class.hover:bg-gray-50]="currentPage !== i + 1">
-            {{i + 1}}
-          </button>
-        </ng-container>
-      </div>
-
-      <!-- Botón siguiente -->
-      <button
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages"
-        class="px-3 py-1 rounded-md text-sm font-medium"
-        [class.text-gray-300]="currentPage === totalPages"
-        [class.text-gray-700]="currentPage !== totalPages"
-        [class.hover:bg-gray-50]="currentPage !== totalPages">
-        <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
+    <!-- Botón siguiente -->
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="px-3 py-1 rounded-md text-sm font-medium"
+      [class.text-gray-300]="currentPage === totalPages"
+      [class.text-gray-700]="currentPage !== totalPages"
+      [class.hover:bg-gray-50]="currentPage !== totalPages">
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
 </div>
