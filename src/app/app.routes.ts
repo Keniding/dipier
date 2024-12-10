@@ -13,6 +13,7 @@ import { UserComponent } from "./pages/services/configuration/user/user.componen
 import { CustomerFormComponent } from "./pages/services/customer/customer-form/customer-form.component";
 import { AuthGuard } from "./guard/auth.guard";
 import {ProfileComponent} from "./pages/services/profile/profile.component";
+import {PaymentMethodsComponent} from "./pages/services/customer/payment-methods/payment-methods.component";
 
 export const routes: Routes = [
   // Ruta por defecto
@@ -39,7 +40,11 @@ export const routes: Routes = [
         children: [
           { path: '', component: CustomerComponent },
           { path: 'new', component: CustomerFormComponent },
-          { path: 'edit/:id', component: CustomerFormComponent }
+          { path: 'edit/:id', component: CustomerFormComponent },
+          {
+            path: ':id/payment-methods',
+            component: PaymentMethodsComponent
+          }
         ]
       },
 

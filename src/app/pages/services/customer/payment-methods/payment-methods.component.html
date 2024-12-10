@@ -1,0 +1,123 @@
+<div class="container mx-auto p-6">
+  <!-- Header Section -->
+  <div class="mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Métodos de Pago</h1>
+      <p class="text-gray-600 mt-1">Gestiona los métodos de pago del cliente</p>
+    </div>
+    <button mat-raised-button
+            class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg
+                       flex items-center gap-2 transition-all duration-300 shadow-lg"
+            (click)="addPaymentMethod()">
+      <mat-icon>add</mat-icon>
+      Nuevo Método de Pago
+    </button>
+  </div>
+
+  <!-- Payment Methods Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <mat-card *ngFor="let method of paymentMethods"
+              class="hover:shadow-lg transition-all duration-300">
+      <!-- Card Header -->
+      <div [ngClass]="getMethodBackground(method.methodType)"
+           class="p-6 rounded-t-lg">
+        <div class="flex justify-between items-start">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <mat-icon class="text-white">{{getMethodIcon(method.methodType)}}</mat-icon>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">
+                {{getMethodLabel(method.methodType)}}
+              </h3>
+              <p class="text-white/80 text-sm">
+                {{formatDate(method.transactionDate)}}
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button mat-icon-button class="bg-white/10 hover:bg-white/20"
+                    (click)="editPaymentMethod(method)">
+              <mat-icon class="text-white">edit</mat-icon>
+            </button>
+            <button mat-icon-button class="bg-white/10 hover:bg-white/20"
+                    (click)="deletePaymentMethod(method.id)">
+              <mat-icon class="text-white">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Content -->
+      <mat-card-content class="p-6">
+        <div class="space-y-4">
+          <ng-container *ngIf="method.details && method.details.length > 0">
+            <div [ngSwitch]="method.details[0].type">
+
+              <!-- Card Details -->
+              <div *ngSwitchCase="'CARD'" class="space-y-2">
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>credit_card</mat-icon>
+                  <span>•••• {{getLastFourDigits(getCardDetails(method.details[0]).cardNumber)}}</span>
+                </div>
+              </div>
+
+              <!-- Digital Wallet Details -->
+              <div *ngSwitchCase="'WALLET'" class="space-y-2">
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>smartphone</mat-icon>
+                  <span>{{getWalletDetails(method.details[0]).phoneNumber}}</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>account_balance_wallet</mat-icon>
+                  <span>{{getWalletDetails(method.details[0]).walletType}}</span>
+                </div>
+              </div>
+
+              <!-- Bank Transfer Details -->
+              <div *ngSwitchCase="'BANK_ACCOUNT'" class="space-y-2">
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>account_balance</mat-icon>
+                  <span>{{getBankDetails(method.details[0]).bankName}}</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>numbers</mat-icon>
+                  <span>•••• {{getLastFourDigits(getBankDetails(method.details[0]).accountNumber)}}</span>
+                </div>
+              </div>
+
+              <!-- Cash Details -->
+              <div *ngSwitchCase="'CASH'" class="space-y-2">
+                <div class="flex items-center gap-2 text-gray-600">
+                  <mat-icon>payments</mat-icon>
+                  <span>{{getCashDetails(method.details[0]).currency}}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Empty State -->
+    <div *ngIf="paymentMethods.length === 0"
+         class="col-span-full flex flex-col items-center justify-center
+                    bg-white rounded-xl shadow p-12">
+      <div class="w-20 h-20 rounded-full bg-primary-100 flex items-center
+                      justify-center mb-4">
+        <mat-icon class="text-primary-600 text-3xl">payment</mat-icon>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">
+        No hay métodos de pago registrados
+      </h3>
+      <p class="text-gray-500 text-center mb-6">
+        Comienza agregando un nuevo método de pago para este cliente
+      </p>
+      <button mat-raised-button color="primary"
+              (click)="addPaymentMethod()">
+        <mat-icon>add</mat-icon>
+        Agregar Método de Pago
+      </button>
+    </div>
+  </div>
+</div>

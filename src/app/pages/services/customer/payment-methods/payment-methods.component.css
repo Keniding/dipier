@@ -1,0 +1,16 @@
+
+:host {
+  display: block;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+::ng-deep .mat-mdc-card {
+  --mdc-elevated-card-container-color: transparent;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+::ng-deep .mat-mdc-card-content {
+  padding: 0;
+}

@@ -128,4 +128,8 @@ export class CustomerComponent implements OnInit {
       panelClass: ['error-snackbar']
     });
   }
+
+  openDetails(id: string) {
+    this.router.navigate([`/dashboard/customers/${id}/payment-methods`]);
+  }
 }
