@@ -32,7 +32,8 @@ import {PaymentMethod, PaymentMethodService} from "../../../../services/payment.
     ConfirmationComponent,
     RouterLink,
     NgClass,
-    SearchComponent
+    SearchComponent,
+    ConfirmationComponent
   ],
   templateUrl: './cart.component.html',
   standalone: true,

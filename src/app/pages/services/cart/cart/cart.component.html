@@ -107,11 +107,13 @@
             (confirmPaymentEvent)="onConfirmPurchase()">
           </app-payment-method>
 
+          <!-- Después -->
           <app-confirmation
             *ngIf="currentStep === 3"
             (prevStepEvent)="prevStep()"
             [invoiceId]="lastInvoiceId"
             [totalAmount]="lastPaymentTotal"
+            [customerId]="customerId"
             class="animate-fadeIn">
           </app-confirmation>
         </div>

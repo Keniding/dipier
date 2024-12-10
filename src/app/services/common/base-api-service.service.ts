@@ -14,7 +14,7 @@ export abstract class BaseApiService {
     return this.addAuthorizationHeader(headers);
   }
 
-  private addAuthorizationHeader(headers: HttpHeaders): HttpHeaders {
+  protected addAuthorizationHeader(headers: HttpHeaders): HttpHeaders {
     if (typeof window !== 'undefined') {
       try {
         const token = localStorage.getItem('authToken');
