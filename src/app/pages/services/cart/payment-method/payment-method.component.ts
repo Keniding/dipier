@@ -14,6 +14,8 @@ import {BasicCustomer, Customer, CustomerService} from "../../../../services/cus
 import {EmailRequest, EmailService} from "../../../../services/email.service";
 import Swal from 'sweetalert2';
 import {CartService} from "../../../../services/cart.service";
+import {DownloadService} from "../../../../services/download.service";
+import {MinioService} from "../../../../services/minio.service";
 
 @Component({
   selector: 'app-payment-method',
@@ -46,7 +48,9 @@ export class PaymentMethodComponent implements OnInit {
     private billingService: BillingService,
     private emailService: EmailService,
     private customerService: CustomerService,
-    private cartService: CartService
+    private cartService: CartService,
+    private downloadService: DownloadService,
+    private minioService: MinioService,
   ) {}
 
   ngOnInit() {
@@ -129,21 +133,68 @@ export class PaymentMethodComponent implements OnInit {
                     showConfirmButton: false
                   });
 
-                  // Limpiar el carrito
-                  this.cartService.clearCart(this.customerId!).subscribe({
-                    next: () => {
-                      console.log('Carrito limpiado correctamente');
+                  this.downloadService.downloadInvoice(createdInvoice.id).subscribe({
+                    next: (blob) => {
+                      // Convertir el Blob a File
+                      const file = new File([blob], `invoice_${createdInvoice.id}.pdf`, {
+                        type: 'application/pdf'
+                      });
+
+                      this.downloadService.downloadInvoice(createdInvoice.id).subscribe({
+                        next: (blob) => {
+                          // Convertir el Blob a File
+                          const file = new File([blob], `invoice_${createdInvoice.id}.pdf`, {
+                            type: 'application/pdf'
+                          });
+
+                          this.minioService.uploadFile(file, createdInvoice.id).subscribe({
+                            next: (response) => {
+                              console.log('Archivo subido exitosamente:', response);
+                              // Limpiar el carrito
+                              this.cartService.clearCart(this.customerId!).subscribe({
+                                next: () => {
+                                  console.log('Carrito limpiado correctamente');
+                                },
+                                error: (error) => {
+                                  console.error('Error al limpiar el carrito:', error);
+                                  Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Advertencia',
+                                    text: 'Error al limpiar el carrito'
+                                  });
+                                }
+                              });
+                            },
+                            error: (error) => {
+                              console.error('Error al subir el archivo:', error);
+                              Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo subir el archivo a MinIO'
+                              });
+                            }
+                          });
+                        },
+                        error: (error) => {
+                          console.error('Error al descargar la factura:', error);
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo descargar la factura'
+                          });
+                        }
+                      });
                     },
                     error: (error) => {
-                      console.error('Error al limpiar el carrito:', error);
+                      console.error('Error al descargar la factura:', error);
                       Swal.fire({
-                        icon: 'warning',
-                        title: 'Advertencia',
-                        text: 'Error al limpiar el carrito'
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo descargar la factura'
                       });
                     }
                   });
-                  
+
                 },
                 error: (error) => {
                   console.error('Error al enviar el email:', error);
