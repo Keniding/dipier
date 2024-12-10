@@ -3,6 +3,13 @@
     <!-- Header -->
     <app-payment-header></app-payment-header>
 
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-medium text-gray-900">Acciones</h3>
+        <app-export-excel [payments]="filteredPayments"></app-export-excel>
+      </div>
+    </div>
+
     <!-- Filtros -->
     <app-payment-filters
       [filters]="filters"

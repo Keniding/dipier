@@ -8,6 +8,7 @@ import {LoadingComponent} from "./components/loading/loading.component";
 import {ErrorComponent} from "./components/error/error.component";
 import {PaymentHeaderComponent} from "./components/header/header.component";
 import {ChartFilters, PaymentHistory, PaymentHistoryService, PaymentSummary} from "../../../../services/report.service";
+import {ExportExcelComponent} from "./components/export-exel/export-exel.component";
 
 @Component({
   selector: 'app-payment-history',
@@ -20,7 +21,8 @@ import {ChartFilters, PaymentHistory, PaymentHistoryService, PaymentSummary} fro
     PaymentFiltersComponent,
     LoadingComponent,
     ErrorComponent,
-    PaymentHeaderComponent
+    PaymentHeaderComponent,
+    ExportExcelComponent
   ],
   providers: [PaymentHistoryService],
 
