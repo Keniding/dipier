@@ -76,8 +76,13 @@ export class ProductComponent implements OnInit, OnDestroy {
   loadProductImage(product: Producto) {
     this.minioService.getObjectById(product.id).subscribe({
       next: (response) => {
-        if (response && response.length > 0 && response[0].estado === 'exitoso') {
-          product.imageUrl = response[0].url;
+        if (response && response.length > 0) {
+          const lastItem = response[response.length - 1];
+          if (lastItem.estado === 'exitoso') {
+            product.imageUrl = lastItem.url;
+          } else {
+            product.imageUrl = this.defaultImageUrl;
+          }
         } else {
           product.imageUrl = this.defaultImageUrl;
         }

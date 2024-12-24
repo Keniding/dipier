@@ -85,7 +85,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           }
         } else {
           product.imageUrl = this.defaultImageUrl;
-        }
+        } 
       },
       error: (error) => {
         console.error('Error al cargar la imagen:', error);
