@@ -14,6 +14,8 @@ import { StoreProductComponent } from "./store-product/store-product.component";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateProductComponent } from "./update-product/update-product.component";
 import { MinioService } from "../../../services/minio.service";
+import { FormsModule } from '@angular/forms';
+import { FilterDialogComponent, FilterOptions } from './filter-dialog/filter-dialog.component';
 
 interface Producto {
   id: string;
@@ -35,6 +37,7 @@ interface Producto {
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    FormsModule
   ],
   templateUrl: './product.component.html',
   standalone: true,
@@ -42,6 +45,8 @@ interface Producto {
 })
 export class ProductComponent implements OnInit, OnDestroy {
   productos: Producto[] = [];
+  productosFiltrados: Producto[] = [];
+  searchTerm: String = '';
   private themeSubscription: Subscription | undefined;
   protected readonly defaultImageUrl = 'https://via.placeholder.com/300';
 
@@ -62,6 +67,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.productService.getProducts().subscribe({
         next: (data) => {
           this.productos = data;
+          this.productosFiltrados = [...this.productos];
           this.productos.forEach(product => {
             this.loadProductImage(product);
           });
@@ -85,7 +91,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           }
         } else {
           product.imageUrl = this.defaultImageUrl;
-        } 
+        }
       },
       error: (error) => {
         console.error('Error al cargar la imagen:', error);
@@ -174,4 +180,87 @@ export class ProductComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  onSearchChange() {
+    this.productosFiltrados = this.productos.filter(producto => {
+      return producto.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+    });
+
+    this.aplicarFiltros();
+  }
+
+  filterOptions: FilterOptions = {
+    priceRange: {
+      min: 0,
+      max: 0
+    },
+    categories: []
+  };
+
+  openFilterDialog() {
+    // Obtener categorías únicas de los productos
+    const uniqueCategories = Array.from(new Set(
+      this.productos.flatMap(p => p.categories.map(c => c.name))
+    ));
+
+    const dialogRef = this.dialog.open(FilterDialogComponent, {
+      width: '600px',
+      data: {
+        categories: uniqueCategories,
+        currentFilters: this.filterOptions
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.filterOptions = result;
+        this.aplicarFiltros();
+      }
+    });
+  }
+
+  aplicarFiltros() {
+    let productosFiltrados = [...this.productos];
+
+    // Aplicar filtro de búsqueda por texto
+    if (this.searchTerm) {
+      const searchTermLower = this.searchTerm.toLowerCase();
+      productosFiltrados = productosFiltrados.filter(producto =>
+        producto.name.toLowerCase().includes(searchTermLower) ||
+        producto.description.toLowerCase().includes(searchTermLower) ||
+        producto.skuCode.toLowerCase().includes(searchTermLower) ||
+        producto.categories.some(cat => cat.name.toLowerCase().includes(searchTermLower))
+      );
+    }
+
+    // Aplicar filtro de rango de precios
+    if (this.filterOptions.priceRange.min > 0 || this.filterOptions.priceRange.max > 0) {
+      productosFiltrados = productosFiltrados.filter(producto => {
+        const price = producto.price;
+        const min = this.filterOptions.priceRange.min;
+        const max = this.filterOptions.priceRange.max;
+
+        if (min > 0 && max > 0) {
+          return price >= min && price <= max;
+        } else if (min > 0) {
+          return price >= min;
+        } else if (max > 0) {
+          return price <= max;
+        }
+        return true;
+      });
+    }
+
+    // Aplicar filtro de categorías
+    if (this.filterOptions.categories.length > 0) {
+      productosFiltrados = productosFiltrados.filter(producto =>
+        producto.categories.some(cat =>
+          this.filterOptions.categories.includes(cat.name)
+        )
+      );
+    }
+
+    this.productosFiltrados = productosFiltrados;
+  }
 }
+
