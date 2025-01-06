@@ -1,9 +1,9 @@
-// services/auth.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { User } from "../../services/user.service";
+import { User, UserRequest } from "../../services/user.service";
 import { jwtDecode } from 'jwt-decode';
+import { isPlatformBrowser } from '@angular/common';
 
 interface AuthResponse {
   token: string;
@@ -25,8 +25,15 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.checkAuthStatus();
+  }
+
+  private getStorage(): Storage | null {
+    return isPlatformBrowser(this.platformId) ? localStorage : null;
   }
 
   private checkAuthStatus() {
@@ -61,7 +68,10 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap(response => {
-          localStorage.setItem('authToken', response.token);
+          const storage = this.getStorage();
+          if (storage) {
+            storage.setItem('authToken', response.token);
+          }
           const decodedToken = this.decodeToken(response.token);
           if (decodedToken) {
             this.currentUserSubject.next(decodedToken.user);
@@ -70,13 +80,21 @@ export class AuthService {
       );
   }
 
+  register(userRequest: UserRequest): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, userRequest);
+  }
+
   logout(): void {
-    localStorage.removeItem('authToken');
+    const storage = this.getStorage();
+    if (storage) {
+      storage.removeItem('authToken');
+    }
     this.currentUserSubject.next(null);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    const storage = this.getStorage();
+    return storage ? storage.getItem('authToken') : null;
   }
 
   isAuthenticated(): boolean {
@@ -93,5 +111,5 @@ export class AuthService {
 
   updateCurrentUser(user: User): void {
     this.currentUserSubject.next(user);
-  } 
+  }
 }

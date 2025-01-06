@@ -14,6 +14,7 @@ import { CustomerFormComponent } from "./pages/services/customer/customer-form/c
 import { AuthGuard } from "./guard/auth.guard";
 import {ProfileComponent} from "./pages/services/profile/profile.component";
 import {PaymentMethodsComponent} from "./pages/services/customer/payment-methods/payment-methods.component";
+import { RegisterComponent } from './register/register.component';
 
 export const routes: Routes = [
   // Ruta por defecto
@@ -21,6 +22,7 @@ export const routes: Routes = [
 
   // Rutas públicas
   { path: 'login', component: LoginFormComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'home', component: HomeComponent },
 
   // Dashboard y rutas protegidas
