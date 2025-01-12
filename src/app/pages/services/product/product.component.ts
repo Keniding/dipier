@@ -48,7 +48,15 @@ export class ProductComponent implements OnInit, OnDestroy {
   productosFiltrados: Producto[] = [];
   searchTerm: String = '';
   private themeSubscription: Subscription | undefined;
-  protected readonly defaultImageUrl = 'https://via.placeholder.com/300';
+  protected readonly defaultImageUrl = `data:image/svg+xml;base64,${btoa(`
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="300" fill="#f3f4f6"/>
+    <path d="M145 115 h10 v70 h-10z M115 145 h70 v10 h-70z" fill="#94a3b8"/>
+    <text x="150" y="220" font-family="Arial" font-size="14" fill="#64748b" text-anchor="middle">
+        Sin imagen
+    </text>
+</svg>
+`)}`;
 
   constructor(
     private productService: ProductService,

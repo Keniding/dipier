@@ -75,6 +75,7 @@ export class AuthService {
           const decodedToken = this.decodeToken(response.token);
           if (decodedToken) {
             this.currentUserSubject.next(decodedToken.user);
+            console.log(decodedToken.user)
           }
         })
       );

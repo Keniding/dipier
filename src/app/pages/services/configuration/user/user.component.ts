@@ -14,6 +14,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { fadeAnimation, itemAnimation, listAnimation } from '../../../../../../animations';
 import { AuthService } from '../../../../login/auth/auth.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-user',
@@ -51,6 +52,7 @@ export class UserComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private authService: AuthService,
+    private router: Router,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);

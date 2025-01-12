@@ -15,10 +15,17 @@ import { AuthGuard } from "./guard/auth.guard";
 import {ProfileComponent} from "./pages/services/profile/profile.component";
 import {PaymentMethodsComponent} from "./pages/services/customer/payment-methods/payment-methods.component";
 import { RegisterComponent } from './register/register.component';
+import {ErrorPageComponent} from "./pages/services/error-page/error-page.component";
 
 export const routes: Routes = [
   // Ruta por defecto
   { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  {
+    path: 'error',
+    component: ErrorPageComponent,
+    data: { skipLocationChange: true }
+  },
 
   // Rutas públicas
   { path: 'login', component: LoginFormComponent },
@@ -31,6 +38,7 @@ export const routes: Routes = [
     component: DashboardLayoutComponent,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'products', pathMatch: 'full' },
       // No es necesario repetir canActivate en los children ya que el padre ya está protegido
       { path: 'products', component: ProductComponent },
       { path: 'categories', component: CategoryComponent },

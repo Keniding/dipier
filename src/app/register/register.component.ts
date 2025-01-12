@@ -49,20 +49,27 @@ export class RegisterComponent implements OnInit {
       ? null : {'mismatch': true};
   }
 
+  // register.component.ts
   onSubmit() {
     if (this.registerForm.valid) {
       const userRequest: UserRequest = {
         username: this.registerForm.value.username,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
-        active: true,
+        active: false,
         role: 'user'
       };
 
       this.authService.register(userRequest).subscribe({
         next: (response) => {
           console.log('Usuario registrado exitosamente', response);
-          this.router.navigate(['/login']);
+          this.router.navigate(['/error'], {
+            queryParams: {
+              status: 'pending',
+              message: `¡Registro exitoso! Solicita al administrardor activar su cuenta.`,
+              returnUrl: '/login'
+            }
+          });
         },
         error: (error) => {
           console.error('Error al registrar usuario', error);
